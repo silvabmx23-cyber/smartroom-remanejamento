@@ -6,7 +6,7 @@ function App() {
   const [carregando, setCarregando] = useState(false);
 
   // IMPORTANTE: Depois você substituirá esse link pela sua URL RAW real do GitHub
-  const URL_RAW_GITHUB = "https://githubusercontent.com";
+  const URL_RAW_GITHUB = "https://raw.githubusercontent.com/silvabmx23-cyber/smartroom-remanejamento/refs/heads/main/salas.json%5B?token=GHSAT0AAAAAAENXX2U7UDZGGYKGES33CKNI2XGBTDQ";
 
   const buscarSalasDoGitHub = async () => {
     setCarregando(true);
