@@ -1,0 +1,9 @@
+{
+  "id": 142,
+  "disciplina": "Desenvolvimento de Aplicações Corporativas (DAC)",
+  "professor": "Prof. André Cardoso",
+  "sala_antiga": "Sala 303 (Bloco A)",
+  "sala_nova": "Sala 102 (Bloco B - Térreo)",
+  "motivo": "O ar-condicionado parou de funcionar inesperadamente e o ambiente ficou superaquecido para a aplicação da prova.",
+  "status_alerta": "ATIVO"
+}
