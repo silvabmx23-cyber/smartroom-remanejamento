@@ -6,7 +6,7 @@ function App() {
   const [carregando, setCarregando] = useState(false);
 
   // IMPORTANTE: Depois você substituirá esse link pela sua URL RAW real do GitHub
-  const URL_RAW_GITHUB = const URL_RAW_GITHUB = "https://githubusercontent.com...";;
+  const URL_RAW_GITHUB = "https://githubusercontent.com";
 
   const buscarSalasDoGitHub = async () => {
     setCarregando(true);
