@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/react-refresh' // ou @vitejs/plugin-react
+import react from '@vitejs/plugin-react'
 
+// https://vitejs.dev
 export default defineConfig({
   plugins: [react()],
-  base: '/smartroom-remanejamento/', // <-- ADICIONE ESSA LINHA COM O NOME DO SEU REPOSITÓRIO
+  base: '/smartroom-remanejamento/',
 })
