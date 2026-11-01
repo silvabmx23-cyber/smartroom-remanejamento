@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "disciplina": "Desenvolvimento de Aplicações Corporativas (DAC)",
+    "professor": "Professor André Cardoso",
+    "salaDe": "Sala 303 (Bloco A)",
+    "salaPara": "Sala 102 (Bloco B - Térreo)",
+    "motivo": "O ar condicionado parou de funcionar inesperadamente e o ambiente ficou superaquecido para a aplicação da prova.",
+    "horario": "10:15"
+  },
+  {
+    "id": 2,
+    "disciplina": "Estrutura de Dados",
+    "professor": "Professora Maria Souza",
+    "salaDe": "Laboratório 2 (Bloco C)",
+    "salaPara": "Auditório Principal",
+    "motivo": "Instalação de software necessário para a aula prática não concluída a tempo no laboratório.",
+    "horario": "11:30"
+  },
+  {
+    "id": 3,
+    "disciplina": "Banco de Dados II",
+    "professor": "Professor Roberto Silva",
+    "salaDe": "Sala 105 (Bloco B)",
+    "salaPara": "Laboratório 4 (Bloco C)",
+    "motivo": "Necessidade de computadores para a realização da atividade avaliativa.",
+    "horario": "08:00"
+  }
+]
