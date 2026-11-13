@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartRoom - Remanejamento de Sala</title>
+  <title>SmartRoom - Alteração de Sala</title>
   <link href="https://googleapis.com" rel="stylesheet">
   <style>
     :root {
-      --primary-red: #dc2626;
-      --dark-red: #991b1b;
-      --bg-page: #f1f5f9;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
+      --green-primary: #008542;
+      --green-dark: #005c2e;
+      --green-glow: rgba(0, 133, 66, 0.35);
+      --bg-dark: #0b1116;
+      --card-bg: #151e26;
+      --box-bg: #1c2731;
+      --border-subtle: #2a3744;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
     }
 
     * {
@@ -22,7 +26,7 @@
     }
 
     body {
-      background-color: var(--bg-page);
+      background-color: var(--bg-dark);
       color: var(--text-main);
       display: flex;
       justify-content: center;
@@ -32,73 +36,75 @@
     }
 
     .card {
-      background: #ffffff;
+      background: var(--card-bg);
       width: 100%;
-      max-width: 680px;
+      max-width: 720px;
       border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
       overflow: hidden;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border-subtle);
     }
 
     .card-header {
-      background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+      background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
       color: #ffffff;
-      padding: 20px 28px;
+      padding: 22px 28px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .header-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.05rem;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
       letter-spacing: 0.5px;
-    }
-
-    .badge-time {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      backdrop-filter: blur(4px);
+      text-transform: uppercase;
     }
 
     .card-body {
-      padding: 32px 28px;
+      padding: 28px 32px 34px;
+    }
+
+    .top-meta {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .badge-time {
+      background: var(--box-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 500;
     }
 
     .info-group {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     .label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       color: var(--text-muted);
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .disciplina {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--text-main);
-      margin-bottom: 12px;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 18px;
+      line-height: 1.3;
     }
 
     .professor {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 500;
-      color: #334155;
+      color: #e2e8f0;
     }
 
     /* Comparativo De -> Para */
@@ -107,18 +113,18 @@
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       gap: 16px;
-      margin: 28px 0;
+      margin-bottom: 26px;
     }
 
     .room-box {
-      padding: 20px;
+      padding: 22px 18px;
       border-radius: 12px;
       text-align: center;
     }
 
     .room-old {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
+      background: var(--box-bg);
+      border: 1px solid var(--border-subtle);
       color: var(--text-muted);
     }
 
@@ -126,55 +132,63 @@
       text-decoration: line-through;
       font-size: 1.15rem;
       font-weight: 600;
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
     .room-new {
-      background: #fef2f2;
-      border: 2px solid var(--primary-red);
-      color: var(--dark-red);
-      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12);
+      background: rgba(0, 133, 66, 0.14);
+      border: 2px solid var(--green-primary);
+      color: #ffffff;
+      box-shadow: 0 0 20px var(--green-glow);
+    }
+
+    .room-new .label {
+      color: #4ade80;
     }
 
     .room-new .room-name {
-      font-size: 1.3rem;
+      font-size: 1.28rem;
       font-weight: 800;
-      margin-top: 6px;
+      margin-top: 8px;
+      line-height: 1.35;
     }
 
     .arrow-circle {
       background: #2563eb;
       color: white;
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.2rem;
       font-weight: bold;
-      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
     }
 
     /* Motivo */
     .reason-box {
-      background: #fffbeb;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.35);
       border-left: 4px solid #f59e0b;
-      padding: 16px 20px;
-      border-radius: 0 10px 10px 0;
+      padding: 18px 22px;
+      border-radius: 10px;
+      text-align: center;
       margin-bottom: 28px;
     }
 
     .reason-title {
       font-weight: 700;
-      color: #b45309;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
+      color: #fbbf24;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
     }
 
     .reason-text {
-      color: #78350f;
+      color: #fef3c7;
       font-size: 0.95rem;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     /* Botões Profissionais */
@@ -186,12 +200,11 @@
     }
 
     .btn {
-      padding: 12px 22px;
+      padding: 12px 20px;
       border-radius: 10px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
       cursor: pointer;
-      border: none;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -199,39 +212,86 @@
     }
 
     .btn-primary {
-      background: #0f172a;
+      background: var(--green-primary);
       color: #ffffff;
-      box-shadow: 0 4px 6px rgba(15, 23, 42, 0.15);
+      border: 1px solid var(--green-primary);
+      box-shadow: 0 4px 12px var(--green-glow);
     }
 
     .btn-primary:hover {
-      background: #1e293b;
+      background: #009e4f;
       transform: translateY(-2px);
     }
 
     .btn-primary.confirmed {
-      background: #16a34a;
+      background: #15803d;
+      border-color: #22c55e;
     }
 
     .btn-secondary {
-      background: #ffffff;
-      color: #334155;
-      border: 1px solid #cbd5e1;
+      background: var(--box-bg);
+      color: #e2e8f0;
+      border: 1px solid var(--border-subtle);
     }
 
     .btn-secondary:hover {
-      background: #f8fafc;
-      border-color: #94a3b8;
+      background: #253340;
+      border-color: #475569;
       transform: translateY(-2px);
     }
 
-    @media (max-width: 600px) {
+    /* Modal do Mapa */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      max-width: 460px;
+      width: 100%;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #4ade80;
+    }
+
+    .map-placeholder {
+      background: var(--box-bg);
+      border: 1px dashed #475569;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 16px 0;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 640px) {
       .transfer-grid {
         grid-template-columns: 1fr;
       }
       .arrow-circle {
         margin: 0 auto;
         transform: rotate(90deg);
+      }
+      .btn {
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
@@ -240,17 +300,18 @@
 
   <div class="card">
     <div class="card-header">
-      <div class="header-title">
-        <span>⚠️</span> ALTERAÇÃO DE SALA IMEDIATA
-      </div>
-      <div class="badge-time">Atualizado às 10:15</div>
+      <span>⚠️</span> ALTERAÇÃO DE SALA IMEDIATA
     </div>
 
     <div class="card-body">
+      <div class="top-meta">
+        <div class="badge-time">Atualizado às 10:15</div>
+      </div>
+
       <div class="info-group">
-        <div class="label">Disciplina</div>
+        <div class="label">Disciplina:</div>
         <div class="disciplina">Desenvolvimento de Aplicações Corporativas (DAC)</div>
-        <div class="label">Professor</div>
+        <div class="label">Professor:</div>
         <div class="professor">Prof. André Cardoso</div>
       </div>
 
@@ -263,7 +324,7 @@
         <div class="arrow-circle">➔</div>
 
         <div class="room-box room-new">
-          <div class="label" style="color: #dc2626;">Nova Sala</div>
+          <div class="label">Nova Sala</div>
           <div class="room-name">Sala 102 (Bloco B - Térreo)</div>
         </div>
       </div>
@@ -279,10 +340,29 @@
         <button id="btnConfirmar" class="btn btn-primary" onclick="confirmarLeitura()">
           ✓ Confirmar Ciência
         </button>
-        <button class="btn btn-secondary" onclick="copiarAviso()">
-          📋 Copiar Aviso para Grupo
+        <button id="btnCopiar" class="btn btn-secondary" onclick="copiarAviso()">
+          📋 Copiar Aviso
+        </button>
+        <button class="btn btn-secondary" onclick="abrirMapa()">
+          🗺️ Ver Mapa do Bloco
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Janela Modal de Localização -->
+  <div id="modalMapa" class="modal-overlay" onclick="fecharMapa()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-title">📍 Localização: Bloco B - Térreo</div>
+      <div class="map-placeholder">
+        <strong>Como chegar na Sala 102:</strong><br><br>
+        1. Saia do Bloco A pela passarela central.<br>
+        2. Siga em direção à recepção do <strong>Bloco B</strong>.<br>
+        3. A <strong>Sala 102</strong> fica no corredor à direita, logo após a coordenação (Térreo).
+      </div>
+      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="fecharMapa()">
+        Entendi
+      </button>
     </div>
   </div>
 
@@ -294,11 +374,23 @@
     }
 
     function copiarAviso() {
-      const texto = "⚠️ *ALTERAÇÃO DE SALA* - DAC (Prof. André Cardoso)\n❌ De: Sala 303 (Bloco A)\n✅ Para: Sala 102 (Bloco B - Térreo)\nMotivo: Ar condicionado com defeito.";
+      const btn = document.getElementById('btnCopiar');
+      const texto = "⚠️ *ALTERAÇÃO DE SALA* - DAC (Prof. André Cardoso)\n❌ De: Sala 303 (Bloco A)\n✅ Para: Sala 102 (Bloco B - Térreo)\nMotivo: O ar condicionado parou de funcionar inesperadamente e o ambiente ficou superaquecido para a aplicação da prova.";
+      
       navigator.clipboard.writeText(texto);
-      alert("Aviso copiado! Agora é só colar no WhatsApp da turma.");
+      btn.innerHTML = '✓ Aviso Copiado!';
+      setTimeout(() => {
+        btn.innerHTML = '📋 Copiar Aviso';
+      }, 2500);
+    }
+
+    function abrirMapa() {
+      document.getElementById('modalMapa').style.display = 'flex';
+    }
+
+    function fecharMapa() {
+      document.getElementById('modalMapa').style.display = 'none';
     }
   </script>
 
 </body>
-</html>
