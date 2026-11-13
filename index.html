@@ -1,13 +1,304 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>smartroom-remanejamento</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartRoom - Remanejamento de Sala</title>
+  <link href="https://googleapis.com" rel="stylesheet">
+  <style>
+    :root {
+      --primary-red: #dc2626;
+      --dark-red: #991b1b;
+      --bg-page: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 680px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+      color: #ffffff;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-time {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-body {
+      padding: 32px 28px;
+    }
+
+    .info-group {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .disciplina {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .professor {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #334155;
+    }
+
+    /* Comparativo De -> Para */
+    .transfer-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0;
+    }
+
+    .room-box {
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .room-old {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: var(--text-muted);
+    }
+
+    .room-old .room-name {
+      text-decoration: line-through;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .room-new {
+      background: #fef2f2;
+      border: 2px solid var(--primary-red);
+      color: var(--dark-red);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12);
+    }
+
+    .room-new .room-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .arrow-circle {
+      background: #2563eb;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Motivo */
+    .reason-box {
+      background: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      padding: 16px 20px;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 28px;
+    }
+
+    .reason-title {
+      font-weight: 700;
+      color: #b45309;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .reason-text {
+      color: #78350f;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Botões Profissionais */
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #0f172a;
+      color: #ffffff;
+      box-shadow: 0 4px 6px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn-primary:hover {
+      background: #1e293b;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary.confirmed {
+      background: #16a34a;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .transfer-grid {
+        grid-template-columns: 1fr;
+      }
+      .arrow-circle {
+        margin: 0 auto;
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="header-title">
+        <span>⚠️</span> ALTERAÇÃO DE SALA IMEDIATA
+      </div>
+      <div class="badge-time">Atualizado às 10:15</div>
+    </div>
+
+    <div class="card-body">
+      <div class="info-group">
+        <div class="label">Disciplina</div>
+        <div class="disciplina">Desenvolvimento de Aplicações Corporativas (DAC)</div>
+        <div class="label">Professor</div>
+        <div class="professor">Prof. André Cardoso</div>
+      </div>
+
+      <div class="transfer-grid">
+        <div class="room-box room-old">
+          <div class="label">Sala Anterior</div>
+          <div class="room-name">Sala 303 (Bloco A)</div>
+        </div>
+
+        <div class="arrow-circle">➔</div>
+
+        <div class="room-box room-new">
+          <div class="label" style="color: #dc2626;">Nova Sala</div>
+          <div class="room-name">Sala 102 (Bloco B - Térreo)</div>
+        </div>
+      </div>
+
+      <div class="reason-box">
+        <div class="reason-title">Motivo do Remanejamento</div>
+        <div class="reason-text">
+          O ar condicionado parou de funcionar inesperadamente e o ambiente ficou superaquecido para a aplicação da prova.
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnConfirmar" class="btn btn-primary" onclick="confirmarLeitura()">
+          ✓ Confirmar Ciência
+        </button>
+        <button class="btn btn-secondary" onclick="copiarAviso()">
+          📋 Copiar Aviso para Grupo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function confirmarLeitura() {
+      const btn = document.getElementById('btnConfirmar');
+      btn.innerHTML = '✓ Ciência Confirmada';
+      btn.classList.add('confirmed');
+    }
+
+    function copiarAviso() {
+      const texto = "⚠️ *ALTERAÇÃO DE SALA* - DAC (Prof. André Cardoso)\n❌ De: Sala 303 (Bloco A)\n✅ Para: Sala 102 (Bloco B - Térreo)\nMotivo: Ar condicionado com defeito.";
+      navigator.clipboard.writeText(texto);
+      alert("Aviso copiado! Agora é só colar no WhatsApp da turma.");
+    }
+  </script>
+
+</body>
 </html>
