@@ -12,7 +12,7 @@
     .box { background: var(--card); border: 1px solid var(--bdr); border-radius: 22px; width: 100%; max-width: 580px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,.7); }
     .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--bdr); }
     .top h1 { font-size: 1.2rem; font-weight: 800; color: var(--e4); }
-    .top a, .sair { color: var(--sec); text-decoration: none; font-size: .82rem; background: none; border: none; cursor: pointer; font-weight: 600; margin-left: 12px; }
+    .top a { color: var(--sec); text-decoration: none; font-size: .84rem; font-weight: 600; }
     .fg { margin-bottom: 14px; }
     label { display: block; font-size: .74rem; text-transform: uppercase; letter-spacing: .07em; color: var(--sec); font-weight: 700; margin-bottom: 5px; }
     input, textarea { width: 100%; background: var(--surf); border: 1px solid var(--bdr); border-radius: 11px; padding: 11px 13px; color: #fff; font-size: .94rem; outline: none; }
@@ -23,38 +23,26 @@
     .chip { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3); color: var(--e4); padding: 6px 11px; border-radius: 20px; font-size: .77rem; font-weight: 600; cursor: pointer; }
     .chip:hover { background: var(--e6); color: #fff; }
     .tk { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.25); padding: 12px; border-radius: 12px; margin-bottom: 18px; }
-    .tk summary { cursor: pointer; font-size: .8rem; font-weight: 700; color: #93c5fd; }
-    .tk input { margin-top: 9px; }
+    .tk label { color: #93c5fd; }
     .btn { width: 100%; background: var(--e6); color: #fff; border: 1px solid var(--e4); padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 6px; }
     .btn:hover { background: var(--e5); }
     .btn:disabled { opacity: .6; cursor: not-allowed; }
     .msg { margin-top: 14px; padding: 12px; border-radius: 10px; text-align: center; font-size: .88rem; font-weight: 600; display: none; }
-    .ok { display: block; background: rgba(16,185,129,.15); color: var(--e4); border: 1px solid var(--e5); }
-    .err { display: block; background: rgba(239,68,68,.15); color: #f87171; border: 1px solid #ef4444; }
-    #login { max-width: 390px; margin-top: 40px; text-align: center; }
-    #login h2 { color: var(--e4); font-size: 1.35rem; margin-bottom: 8px; }
-    #login p { color: var(--sec); font-size: .86rem; margin-bottom: 18px; }
     @media (max-width: 500px) { .row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <div id="login" class="box">
-    <h2>Acesso Restrito — Apoio</h2>
-    <p>Digite a senha da equipe de apoio para gerenciar as salas.</p>
-    <div class="fg"><input type="password" id="senha" placeholder="Senha de acesso"></div>
-    <button type="button" id="btnLogin" class="btn">Entrar no Painel</button>
-    <div id="erroLogin" class="msg err"></div>
-  </div>
-
-  <div id="painel" class="box" style="display:none;">
+  <div class="box">
     <div class="top">
       <h1>SmartRoom Apoio</h1>
-      <div><a href="./index.html" target="_blank">Ver Site ➔</a><button type="button" id="btnSair" class="sair">Sair</button></div>
+      <a href="./index.html" target="_blank">Ver Site Público ➔</a>
     </div>
-    <details class="tk" id="tkBox">
-      <summary>⚙️ Configurar Chave de Publicação (GitHub Token)</summary>
+
+    <div class="tk">
+      <label>Chave de Publicação (GitHub Token)</label>
       <input type="password" id="token" placeholder="github_pat_xxxxxxxxxxxx">
-    </details>
+    </div>
+
     <div class="row">
       <div class="fg"><label>Horário da Atualização</label><input type="text" id="hora"></div>
       <div class="fg"><label>Sigla</label><input type="text" id="sigla"></div>
@@ -66,32 +54,33 @@
       <div class="fg"><label>Nova Sala</label><input type="text" id="nova"></div>
     </div>
     <div class="fg">
-      <label>Motivo Rápido</label>
+      <label>Motivo Rápido (Clique para preencher)</label>
       <div class="chips">
-        <button type="button" class="chip" data-m="O ar-condicionado apresentou defeito e a sala ficou superaquecida.">❄️ Ar-condicionado</button>
-        <button type="button" class="chip" data-m="A sala original já estava reservada para outra atividade acadêmica.">📅 Sala reservada</button>
-        <button type="button" class="chip" data-m="O projetor e equipamentos multimídia apresentaram falha técnica.">📽️ Projetor com defeito</button>
-        <button type="button" class="chip" data-m="Manutenção elétrica ou estrutural emergencial na sala original.">⚡ Manutenção</button>
+        <button type="button" class="chip" onclick="setMotivo('O ar-condicionado apresentou defeito e a sala ficou superaquecida.')">❄️ Ar-condicionado</button>
+        <button type="button" class="chip" onclick="setMotivo('A sala original já estava reservada para outra atividade acadêmica.')">📅 Sala reservada</button>
+        <button type="button" class="chip" onclick="setMotivo('O projetor e equipamentos multimídia apresentaram falha técnica.')">📽️ Projetor com defeito</button>
+        <button type="button" class="chip" onclick="setMotivo('Manutenção elétrica ou estrutural emergencial na sala original.')">⚡ Manutenção</button>
       </div>
       <textarea id="motivo"></textarea>
     </div>
     <div class="fg"><label>Título do Mapa</label><input type="text" id="mTit"></div>
     <div class="fg"><label>Instruções de Como Chegar (1 por linha)</label><textarea id="mPassos"></textarea></div>
-    <button type="button" id="btnSave" class="btn">Publicar Alteração Agora</button>
+    <button type="button" id="btnSave" class="btn" onclick="publicar()">Publicar Alteração Agora</button>
     <div id="status" class="msg"></div>
   </div>
 
   <script>
     const API_URL = 'https://github.com';
-    const SENHA = 'apoio2026';
 
-    async function abrir() {
-      document.getElementById('login').style.display = 'none';
-      document.getElementById('painel').style.display = 'block';
+    function setMotivo(txt) {
+      document.getElementById('motivo').value = txt;
+    }
+
+    window.onload = async function() {
       const tk = localStorage.getItem('sr_tk');
-      if (tk) document.getElementById('token').value = tk; else document.getElementById('tkBox').open = true;
+      if (tk) document.getElementById('token').value = tk;
       const d = new Date();
-      document.getElementById('hora').value = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+      document.getElementById('hora').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
       try {
         const r = await fetch('./dados.json?t=' + Date.now());
         const j = await r.json();
@@ -101,27 +90,29 @@
         document.getElementById('ant').value = j.sala_anterior || '';
         document.getElementById('nova').value = j.nova_sala || '';
         document.getElementById('motivo').value = j.motivo || '';
-        if (j.mapa) { document.getElementById('mTit').value = j.mapa.titulo || ''; document.getElementById('mPassos').value = (j.mapa.passos || []).join('\n'); }
+        if (j.mapa) {
+          document.getElementById('mTit').value = j.mapa.titulo || '';
+          document.getElementById('mPassos').value = (j.mapa.passos || []).join('\n');
+        }
       } catch (e) {}
-    }
+    };
 
-    function logar() {
-      if (document.getElementById('senha').value.trim() === SENHA) { localStorage.setItem('sr_auth', '1'); abrir(); }
-      else { const e = document.getElementById('erroLogin'); e.style.display = 'block'; e.innerText = 'Senha incorreta.'; }
-    }
-
-    document.getElementById('btnLogin').onclick = logar;
-    document.getElementById('senha').onkeydown = e => { if (e.key === 'Enter') logar(); };
-    document.getElementById('btnSair').onclick = () => { localStorage.removeItem('sr_auth'); location.reload(); };
-    document.querySelectorAll('.chip').forEach(b => b.onclick = () => document.getElementById('motivo').value = b.dataset.m);
-
-    document.getElementById('btnSave').onclick = async () => {
+    async function publicar() {
       const tk = document.getElementById('token').value.trim();
       const st = document.getElementById('status');
       const btn = document.getElementById('btnSave');
-      if (!tk) { document.getElementById('tkBox').open = true; st.className = 'msg err'; st.innerText = 'Cole o GitHub Token acima.'; return; }
+      if (!tk) {
+        st.style.display = 'block';
+        st.style.background = 'rgba(239,68,68,.15)';
+        st.style.color = '#f87171';
+        st.innerText = 'Cole o GitHub Token no campo azul acima.';
+        return;
+      }
       localStorage.setItem('sr_tk', tk);
-      btn.disabled = true; btn.innerText = 'Publicando...'; st.style.display = 'none';
+      btn.disabled = true;
+      btn.innerText = 'Publicando...';
+      st.style.display = 'none';
+
       const payload = {
         atualizado_em: document.getElementById('hora').value,
         disciplina: document.getElementById('disc').value,
@@ -130,8 +121,12 @@
         sala_anterior: document.getElementById('ant').value,
         nova_sala: document.getElementById('nova').value,
         motivo: document.getElementById('motivo').value,
-        mapa: { titulo: document.getElementById('mTit').value, passos: document.getElementById('mPassos').value.split('\n').map(x => x.trim()).filter(Boolean) }
+        mapa: {
+          titulo: document.getElementById('mTit').value,
+          passos: document.getElementById('mPassos').value.split('\n').map(x => x.trim()).filter(Boolean)
+        }
       };
+
       try {
         const g = await fetch(API_URL, { headers: { Authorization: 'Bearer ' + tk } });
         if (!g.ok) throw new Error('Token inválido ou sem permissão (Erro ' + g.status + ').');
@@ -143,11 +138,20 @@
           body: JSON.stringify({ message: 'Atualiza sala ' + payload.sigla, content: b64, sha: info.sha })
         });
         if (!p.ok) throw new Error('Falha ao salvar (Erro ' + p.status + ').');
-        st.className = 'msg ok'; st.innerText = '✅ Publicado! O site dos alunos atualizará em 30 segundos.';
-      } catch (err)  st.className = 'msg err'; st.innerText = '❌ ' + err.message;}
-      finally { btn.disabled = false; btn.innerText = 'Publicar Alteração Agora'; }
-};
-if (localStorage.getItem('sr_auth') === '1') abrir();
-</script>
+        st.style.display = 'block';
+        st.style.background = 'rgba(16,185,129,.15)';
+        st.style.color = '#34d399';
+        st.innerText = '✅ Publicado com sucesso! O site dos alunos atualizará em 30 segundos.';
+      } catch (err) {
+        st.style.display = 'block';
+        st.style.background = 'rgba(239,68,68,.15)';
+        st.style.color = '#f87171';
+        st.innerText = '❌ ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Publicar Alteração Agora';
+      }
+    }
+  </script>
 </body>
 </html>
