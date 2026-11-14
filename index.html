@@ -3,31 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartRoom - Alteração de Sala</title>
-  <link href="https://googleapis.com" rel="stylesheet">
+  <title>SmartRoom — Alteração de Sala</title>
+  <link rel="preconnect" href="https://googleapis.com">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --green-primary: #008542;
-      --green-dark: #005c2e;
-      --green-glow: rgba(0, 133, 66, 0.35);
-      --bg-dark: #0b1116;
-      --card-bg: #151e26;
-      --box-bg: #1c2731;
-      --border-subtle: #2a3744;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --emerald-400: #34d399;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --bg-base: #070b0e;
+      --card-glass: rgba(17, 25, 33, 0.72);
+      --surface: rgba(255, 255, 255, 0.03);
+      --surface-hover: rgba(255, 255, 255, 0.06);
+      --border-light: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.16) 0%, transparent 55%),
+        radial-gradient(circle at 85% 90%, rgba(37, 99, 235, 0.1) 0%, transparent 45%);
+      color: var(--text-primary);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -36,78 +43,108 @@
     }
 
     .card {
-      background: var(--card-bg);
+      background: var(--card-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       width: 100%;
       max-width: 720px;
-      border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       overflow: hidden;
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--border-light);
     }
 
     .card-header {
-      background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
+      background: linear-gradient(90deg, rgba(5, 150, 105, 0.9), rgba(4, 120, 87, 0.9));
+      border-bottom: 1px solid rgba(52, 211, 153, 0.3);
       color: #ffffff;
-      padding: 22px 28px;
+      padding: 18px 28px;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       font-weight: 800;
-      font-size: 1.25rem;
-      letter-spacing: 0.5px;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
     .card-body {
-      padding: 28px 32px 34px;
+      padding: 28px 32px 36px;
     }
 
     .top-meta {
       display: flex;
-      justify-content: flex-end;
-      margin-bottom: 16px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--emerald-400);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     .badge-time {
-      background: var(--box-bg);
-      color: var(--text-muted);
-      border: 1px solid var(--border-subtle);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-light);
       padding: 6px 14px;
       border-radius: 999px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 500;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--emerald-400);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--emerald-400);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
     }
 
     .info-group {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
     }
 
     .label {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--text-muted);
-      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--text-secondary);
+      font-weight: 700;
       margin-bottom: 6px;
     }
 
     .disciplina {
-      font-size: 1.45rem;
-      font-weight: 700;
+      font-size: 1.55rem;
+      font-weight: 800;
       color: #ffffff;
       margin-bottom: 18px;
-      line-height: 1.3;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
     }
 
     .professor {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 500;
-      color: #e2e8f0;
+      color: #cbd5e1;
     }
 
-    /* Comparativo De -> Para */
     .transfer-grid {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
@@ -118,70 +155,70 @@
 
     .room-box {
       padding: 22px 18px;
-      border-radius: 12px;
+      border-radius: 16px;
       text-align: center;
     }
 
     .room-old {
-      background: var(--box-bg);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      color: var(--text-secondary);
     }
 
     .room-old .room-name {
       text-decoration: line-through;
-      font-size: 1.15rem;
+      opacity: 0.75;
+      font-size: 1.1rem;
       font-weight: 600;
       margin-top: 8px;
     }
 
     .room-new {
-      background: rgba(0, 133, 66, 0.14);
-      border: 2px solid var(--green-primary);
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.16), rgba(5, 150, 105, 0.06));
+      border: 1.5px solid var(--emerald-500);
       color: #ffffff;
-      box-shadow: 0 0 20px var(--green-glow);
+      box-shadow: 0 0 30px var(--emerald-glow);
     }
 
     .room-new .label {
-      color: #4ade80;
+      color: var(--emerald-400);
     }
 
     .room-new .room-name {
-      font-size: 1.28rem;
+      font-size: 1.32rem;
       font-weight: 800;
       margin-top: 8px;
-      line-height: 1.35;
+      line-height: 1.3;
     }
 
     .arrow-circle {
-      background: #2563eb;
-      color: white;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
       width: 42px;
       height: 42px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
     }
 
-    /* Motivo */
     .reason-box {
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.07);
+      border: 1px solid rgba(245, 158, 11, 0.25);
       border-left: 4px solid #f59e0b;
       padding: 18px 22px;
-      border-radius: 10px;
+      border-radius: 14px;
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
     }
 
     .reason-title {
       font-weight: 700;
       color: #fbbf24;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 6px;
     }
 
@@ -191,7 +228,6 @@
       line-height: 1.55;
     }
 
-    /* Botões Profissionais */
     .actions {
       display: flex;
       gap: 12px;
@@ -200,53 +236,58 @@
     }
 
     .btn {
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 0.92rem;
+      padding: 13px 22px;
+      border-radius: 12px;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
     }
 
     .btn-primary {
-      background: var(--green-primary);
+      background: var(--emerald-600);
       color: #ffffff;
-      border: 1px solid var(--green-primary);
-      box-shadow: 0 4px 12px var(--green-glow);
+      border: 1px solid var(--emerald-400);
+      box-shadow: 0 4px 16px var(--emerald-glow);
     }
 
     .btn-primary:hover {
-      background: #009e4f;
+      background: var(--emerald-500);
       transform: translateY(-2px);
     }
 
     .btn-primary.confirmed {
-      background: #15803d;
-      border-color: #22c55e;
+      background: #065f46;
+      border-color: var(--emerald-400);
+      color: #a7f3d0;
     }
 
     .btn-secondary {
-      background: var(--box-bg);
+      background: var(--surface);
       color: #e2e8f0;
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--border-light);
     }
 
     .btn-secondary:hover {
-      background: #253340;
-      border-color: #475569;
+      background: var(--surface-hover);
+      border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-2px);
     }
 
-    /* Modal do Mapa */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
       justify-content: center;
       align-items: center;
       padding: 20px;
@@ -254,45 +295,51 @@
     }
 
     .modal-content {
-      background: var(--card-bg);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
+      background: #111921;
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
       max-width: 460px;
       width: 100%;
-      padding: 24px;
+      padding: 28px;
       text-align: center;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
     }
 
     .modal-title {
       font-size: 1.15rem;
       font-weight: 700;
       margin-bottom: 12px;
-      color: #4ade80;
+      color: var(--emerald-400);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .map-placeholder {
-      background: var(--box-bg);
-      border: 1px dashed #475569;
-      border-radius: 12px;
-      padding: 24px;
-      margin: 16px 0;
-      color: var(--text-muted);
-      font-size: 0.92rem;
-      line-height: 1.6;
+      background: var(--surface);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 22px;
+      margin: 18px 0;
+      color: #cbd5e1;
+      font-size: 0.94rem;
+      line-height: 1.65;
+      text-align: left;
+    }
+
+    .map-placeholder strong {
+      color: #ffffff;
+      display: block;
+      margin-bottom: 10px;
+      text-align: center;
     }
 
     @media (max-width: 640px) {
-      .transfer-grid {
-        grid-template-columns: 1fr;
-      }
-      .arrow-circle {
-        margin: 0 auto;
-        transform: rotate(90deg);
-      }
-      .btn {
-        width: 100%;
-        justify-content: center;
-      }
+      .card-body { padding: 22px 20px 28px; }
+      .transfer-grid { grid-template-columns: 1fr; }
+      .arrow-circle { margin: 0 auto; transform: rotate(90deg); }
+      .btn { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -300,97 +347,41 @@
 
   <div class="card">
     <div class="card-header">
-      <span>⚠️</span> ALTERAÇÃO DE SALA IMEDIATA
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      Alteração de Sala Imediata
     </div>
 
     <div class="card-body">
       <div class="top-meta">
-        <div class="badge-time">Atualizado às 10:15</div>
+        <span class="brand-tag">SmartRoom</span>
+        <div class="badge-time">
+          <span class="pulse-dot"></span>
+          <span id="hora">Carregando...</span>
+        </div>
       </div>
 
       <div class="info-group">
-        <div class="label">Disciplina:</div>
-        <div class="disciplina">Desenvolvimento de Aplicações Corporativas (DAC)</div>
-        <div class="label">Professor:</div>
-        <div class="professor">Prof. André Cardoso</div>
+        <div class="label">Disciplina</div>
+        <div id="disciplina" class="disciplina">Carregando...</div>
+        <div class="label">Professor</div>
+        <div id="professor" class="professor">Carregando...</div>
       </div>
 
       <div class="transfer-grid">
         <div class="room-box room-old">
           <div class="label">Sala Anterior</div>
-          <div class="room-name">Sala 303 (Bloco A)</div>
+          <div id="salaAnterior" class="room-name">—</div>
         </div>
 
-        <div class="arrow-circle">➔</div>
+        <div class="arrow-circle">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </div>
 
         <div class="room-box room-new">
           <div class="label">Nova Sala</div>
-          <div class="room-name">Sala 102 (Bloco B - Térreo)</div>
+          <div id="novaSala" class="room-name">—</div>
         </div>
       </div>
 
       <div class="reason-box">
         <div class="reason-title">Motivo do Remanejamento</div>
-        <div class="reason-text">
-          O ar condicionado parou de funcionar inesperadamente e o ambiente ficou superaquecido para a aplicação da prova.
-        </div>
-      </div>
-
-      <div class="actions">
-        <button id="btnConfirmar" class="btn btn-primary" onclick="confirmarLeitura()">
-          ✓ Confirmar Ciência
-        </button>
-        <button id="btnCopiar" class="btn btn-secondary" onclick="copiarAviso()">
-          📋 Copiar Aviso
-        </button>
-        <button class="btn btn-secondary" onclick="abrirMapa()">
-          🗺️ Ver Mapa do Bloco
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Janela Modal de Localização -->
-  <div id="modalMapa" class="modal-overlay" onclick="fecharMapa()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-title">📍 Localização: Bloco B - Térreo</div>
-      <div class="map-placeholder">
-        <strong>Como chegar na Sala 102:</strong><br><br>
-        1. Saia do Bloco A pela passarela central.<br>
-        2. Siga em direção à recepção do <strong>Bloco B</strong>.<br>
-        3. A <strong>Sala 102</strong> fica no corredor à direita, logo após a coordenação (Térreo).
-      </div>
-      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="fecharMapa()">
-        Entendi
-      </button>
-    </div>
-  </div>
-
-  <script>
-    function confirmarLeitura() {
-      const btn = document.getElementById('btnConfirmar');
-      btn.innerHTML = '✓ Ciência Confirmada';
-      btn.classList.add('confirmed');
-    }
-
-    function copiarAviso() {
-      const btn = document.getElementById('btnCopiar');
-      const texto = "⚠️ *ALTERAÇÃO DE SALA* - DAC (Prof. André Cardoso)\n❌ De: Sala 303 (Bloco A)\n✅ Para: Sala 102 (Bloco B - Térreo)\nMotivo: O ar condicionado parou de funcionar inesperadamente e o ambiente ficou superaquecido para a aplicação da prova.";
-      
-      navigator.clipboard.writeText(texto);
-      btn.innerHTML = '✓ Aviso Copiado!';
-      setTimeout(() => {
-        btn.innerHTML = '📋 Copiar Aviso';
-      }, 2500);
-    }
-
-    function abrirMapa() {
-      document.getElementById('modalMapa').style.display = 'flex';
-    }
-
-    function fecharMapa() {
-      document.getElementById('modalMapa').style.display = 'none';
-    }
-  </script>
-
-</body>
