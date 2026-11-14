@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartRoom — Painel Admin</title>
+  <title>SmartRoom — Painel de Apoio</title>
   <link href="https://googleapis.com" rel="stylesheet">
   <style>
     :root {
@@ -11,9 +11,9 @@
       --emerald-500: #10b981;
       --emerald-600: #059669;
       --bg-base: #070b0e;
-      --card-glass: rgba(17, 25, 33, 0.85);
-      --surface: rgba(255, 255, 255, 0.04);
-      --border-light: rgba(255, 255, 255, 0.1);
+      --card-glass: rgba(17, 25, 33, 0.9);
+      --surface: rgba(255, 255, 255, 0.05);
+      --border-light: rgba(255, 255, 255, 0.12);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
     }
@@ -26,7 +26,8 @@
       color: var(--text-primary);
       display: flex;
       justify-content: center;
-      padding: 24px 16px;
+      align-items: flex-start;
+      padding: 20px 14px;
       min-height: 100vh;
     }
 
@@ -37,7 +38,7 @@
       border-radius: 24px;
       width: 100%;
       max-width: 600px;
-      padding: 28px;
+      padding: 24px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
     }
 
@@ -45,17 +46,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--border-light);
     }
 
-    .header h1 { font-size: 1.25rem; font-weight: 800; color: var(--emerald-400); }
-    .header a { color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; }
-    .header a:hover { color: #fff; }
+    .header h1 { font-size: 1.2rem; font-weight: 800; color: var(--emerald-400); }
+    .header-actions { display: flex; gap: 14px; align-items: center; }
+    .header a, .btn-sair { color: var(--text-secondary); text-decoration: none; font-size: 0.82rem; background: none; border: none; cursor: pointer; font-weight: 600; }
+    .header a:hover, .btn-sair:hover { color: #fff; }
 
     .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); font-weight: 700; margin-bottom: 6px; }
+    label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); font-weight: 700; margin-bottom: 6px; }
 
     input, textarea {
       width: 100%;
@@ -70,26 +72,60 @@
     }
 
     input:focus, textarea:focus { border-color: var(--emerald-400); }
-    textarea { resize: vertical; min-height: 80px; }
+    textarea { resize: vertical; min-height: 76px; }
 
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .quick-reasons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .chip {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--emerald-400);
+      padding: 7px 11px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip:hover, .chip:active {
+      background: var(--emerald-600);
+      color: #fff;
+      border-color: var(--emerald-400);
+    }
 
     .token-box {
       background: rgba(59, 130, 246, 0.08);
       border: 1px solid rgba(59, 130, 246, 0.25);
-      padding: 16px;
+      padding: 14px;
       border-radius: 14px;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
-    .token-box small { display: block; color: #93c5fd; font-size: 0.78rem; margin-top: 6px; line-height: 1.4; }
+    .token-box summary {
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #93c5fd;
+      user-select: none;
+    }
+
+    .token-content { margin-top: 10px; }
+    .token-box small { display: block; color: #93c5fd; font-size: 0.76rem; margin-top: 6px; line-height: 1.4; }
 
     .btn {
       width: 100%;
       background: var(--emerald-600);
       color: #fff;
       border: 1px solid var(--emerald-400);
-      padding: 14px;
+      padding: 15px;
       border-radius: 12px;
       font-size: 1rem;
       font-weight: 700;
@@ -106,29 +142,51 @@
       padding: 12px;
       border-radius: 10px;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       display: none;
     }
     .status.ok { display: block; background: rgba(16, 185, 129, 0.15); color: var(--emerald-400); border: 1px solid var(--emerald-500); }
     .status.err { display: block; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid #ef4444; }
 
-    @media (max-width: 500px) { .row { grid-template-columns: 1fr; } }
+    #loginScreen { max-width: 400px; margin-top: 40px; text-align: center; }
+    #loginScreen h2 { color: var(--emerald-400); font-size: 1.4rem; margin-bottom: 8px; }
+    #loginScreen p { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 20px; }
+
+    @media (max-width: 500px) {
+      .row { grid-template-columns: 1fr; }
+      .container { padding: 20px 16px; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div id="loginScreen" class="container">
+    <h2>Acesso Restrito — Apoio</h2>
+    <p>Digite a senha da equipe de apoio para gerenciar as salas.</p>
+    <div class="form-group">
+      <input type="password" id="senhaApoio" placeholder="Senha de acesso" onkeydown="if(event.key==='Enter') verificarLogin()">
+    </div>
+    <button class="btn" onclick="verificarLogin()">Entrar no Painel</button>
+    <div id="loginErro" class="status err"></div>
+  </div>
+
+  <div id="painelAdmin" class="container" style="display: none;">
     <div class="header">
-      <h1>SmartRoom Admin</h1>
-      <a href="./index.html">Ver Site Público ➔</a>
+      <h1>SmartRoom Apoio</h1>
+      <div class="header-actions">
+        <a href="./index.html" target="_blank">Ver Site ➔</a>
+        <button class="btn-sair" onclick="sairPainel()">Sair</button>
+      </div>
     </div>
 
-    <div class="token-box">
-      <label for="ghToken">Chave de Acesso (GitHub Token)</label>
-      <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      <small>Salvo apenas neste dispositivo. Necessário para gravar no repositório.</small>
-    </div>
+    <details class="token-box" id="tokenDetails">
+      <summary>⚙️ Configurar Chave de Publicação (GitHub Token)</summary>
+      <div class="token-content">
+        <input type="password" id="ghToken" placeholder="github_pat_xxxxxxxxxxxx">
+        <small>Configurado uma única vez neste computador ou celular.</small>
+      </div>
+    </details>
 
     <div class="row">
       <div class="form-group">
@@ -163,8 +221,15 @@
     </div>
 
     <div class="form-group">
-      <label>Motivo do Remanejamento</label>
-      <textarea id="motivo" placeholder="Descreva o motivo..."></textarea>
+      <label>Motivo Rápido (Toque para preencher)</label>
+      <div class="quick-reasons">
+        <button type="button" class="chip" onclick="selecionarMotivo('O ar-condicionado apresentou defeito e a sala ficou superaquecida para a aula.')">❄️ Ar-condicionado</button>
+        <button type="button" class="chip" onclick="selecionarMotivo('A sala original já estava reservada para outra atividade acadêmica.')">📅 Sala já reservada</button>
+        <button type="button" class="chip" onclick="selecionarMotivo('O projetor e os equipamentos multimídia da sala apresentaram falha técnica.')">📽️ Projetor com defeito</button>
+        <button type="button" class="chip" onclick="selecionarMotivo('Manutenção elétrica ou estrutural emergencial na sala original.')">⚡ Manutenção na sala</button>
+        <button type="button" class="chip" onclick="selecionarMotivo('Remanejamento para melhor acomodação da quantidade de alunos da turma.')">👥 Capacidade da sala</button>
+      </div>
+      <textarea id="motivo" placeholder="Ou digite um motivo personalizado..."></textarea>
     </div>
 
     <div class="form-group">
@@ -174,7 +239,8 @@
 
     <div class="form-group">
       <label>Instruções de Como Chegar (1 passo por linha)</label>
-      <textarea id="mapa_passos" placeholder="1. Saia do Bloco A...&#10;2. Siga para o Bloco B..."></textarea>
+      <textarea id="mapa_passos" placeholder="1. Saia do Bloco A pela passarela central
+2. Siga em direção à recepção do Bloco B"></textarea>
     </div>
 
     <button id="btnSalvar" class="btn" onclick="salvarNoGitHub()">Publicar Alteração Agora</button>
@@ -185,102 +251,132 @@
     const USUARIO = 'silvabmx23-cyber';
     const REPO = 'smartroom-remanejamento';
     const ARQUIVO = 'dados.json';
+    const SENHA_APOIO = 'apoio2026';
 
-    window.onload = async () => {
-      const tokenSalvo = localStorage.getItem('smartroom_gh_token');
-      if (tokenSalvo) document.getElementById('ghToken').value = tokenSalvo;
-
-      try {
-        const res = await fetch('./dados.json?t=' + Date.now());
-        const d = await res.json();
-        document.getElementById('atualizado_em').value = d.atualizado_em || '';
-        document.getElementById('sigla').value = d.sigla || '';
-        document.getElementById('disciplina').value = d.disciplina || '';
-        document.getElementById('professor').value = d.professor || '';
-        document.getElementById('sala_anterior').value = d.sala_anterior || '';
-        document.getElementById('nova_sala').value = d.nova_sala || '';
-        document.getElementById('motivo').value = d.motivo || '';
-        if (d.mapa) {
-          document.getElementById('mapa_titulo').value = d.mapa.titulo || '';
-          document.getElementById('mapa_passos').value = (d.mapa.passos || []).join('\n');
-        }
-      } catch (e) { console.log('Preencha os dados iniciais.'); }
-    };
-
-    async function salvarNoGitHub() {
-      const token = document.getElementById('ghToken').value.trim();
-      const status = document.getElementById('statusMsg');
-      const btn = document.getElementById('btnSalvar');
-
-      if (!token) {
-        status.className = 'status err';
-        status.innerText = 'Cole sua Chave de Acesso (GitHub Token) acima.';
-        return;
-      }
-
-      localStorage.setItem('smartroom_gh_token', token);
-      btn.disabled = true;
-      btn.innerText = 'Publicando...';
-      status.style.display = 'none';
-
-      const novaSala = document.getElementById('nova_sala').value;
-      const passosArray = document.getElementById('mapa_passos').value
-        .split('\n')
-        .map(l => l.trim())
-        .filter(l => l !== '');
-
-      const novoJson = {
-        atualizado_em: document.getElementById('atualizado_em').value,
-        disciplina: document.getElementById('disciplina').value,
-        sigla: document.getElementById('sigla').value,
-        professor: document.getElementById('professor').value,
-        sala_anterior: document.getElementById('sala_anterior').value,
-        nova_sala: novaSala,
-        motivo: document.getElementById('motivo').value,
-        mapa: {
-          titulo: document.getElementById('mapa_titulo').value,
-          cabecalho: `Como chegar na ${novaSala.split('(')[0].trim()}:`,
-          passos: passosArray
-        }
-      };
-
-      try {
-        const urlApi = `https://github.com{USUARIO}/${REPO}/contents/${ARQUIVO}`;
-        
-        const getRes = await fetch(urlApi, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!getRes.ok) throw new Error('Token inválido ou sem permissão no repositório.');
-        const fileData = await getRes.json();
-
-        const jsonString = JSON.stringify(novoJson, null, 2);
-        const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
-
-        const putRes = await fetch(urlApi, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: 'Atualização via SmartRoom Admin',
-            content: base64Content,
-            sha: fileData.sha
-          })
-        });
-
-        if (!putRes.ok) throw new Error('Erro ao salvar no GitHub.');
-
-        status.className = 'status ok';
-        status.innerText = '✓ Atualizado com sucesso! O site muda em ~30 segundos.';
-      } catch (erro) {
-        status.className = 'status err';
-        status.innerText = erro.message;
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Publicar Alteração Agora';
+    function verificarLogin() {
+      const digitada = document.getElementById('senhaApoio').value;
+      const erro = document.getElementById('loginErro');
+      if (digitada === SENHA_APOIO) {
+        localStorage.setItem('smartroom_auth', 'ok');
+        mostrarPainel();
+      } else {
+        erro.style.display = 'block';
+        erro.innerText = 'Senha incorreta. Tente novamente.';
       }
     }
-  </script>
-</body>
-</html>
+
+    function sairPainel() {
+      localStorage.removeItem('smartroom_auth');
+      location.reload();
+    }
+
+    function selecionarMotivo(texto) {
+      document.getElementById('motivo').value = texto;
+    }
+
+    function preencherHoraAtual() {
+      const agora = new Date();
+      const horas = String(agora.getHours()).padStart(2, '0');
+      const minutos = String(agora.getMinutes()).padStart(2, '0');
+      document.getElementById('atualizado_em').value = `${horas}:${minutos}`;
+    }
+async function mostrarPainel() {
+document.getElementById('loginScreen').style.display = 'none';
+document.getElementById('painelAdmin').style.display = 'block';
+const tokenSalvo = localStorage.getItem('smartroom_gh_token');
+if (tokenSalvo) {
+document.getElementById('ghToken').value = tokenSalvo;
+} else {
+document.getElementById('tokenDetails').open = true;
+}
+try {
+const res = await fetch('./dados.json?t=' + Date.now());
+const d = await res.json();
+preencherHoraAtual();
+document.getElementById('sigla').value = d.sigla || '';
+document.getElementById('disciplina').value = d.disciplina || '';
+document.getElementById('professor').value = d.professor || '';
+document.getElementById('sala_anterior').value = d.sala_anterior || '';
+document.getElementById('nova_sala').value = d.nova_sala || '';
+document.getElementById('motivo').value = d.motivo || '';
+if (d.mapa) {
+document.getElementById('mapa_titulo').value = d.mapa.titulo || '';
+document.getElementById('mapa_passos').value = (d.mapa.passos || []).join('\n');
+}
+} catch (e) {
+preencherHoraAtual();
+}
+}
+window.onload = () => {
+if (localStorage.getItem('smartroom_auth') === 'ok') {
+mostrarPainel();
+}
+};
+async function salvarNoGitHub() {
+const token = document.getElementById('ghToken').value.trim();
+const status = document.getElementById('statusMsg');
+const btn = document.getElementById('btnSalvar');
+if (!token) {
+document.getElementById('tokenDetails').open = true;
+status.className = 'status err';
+status.innerText = 'Configure a Chave de Publicação (GitHub Token) acima.';
+return;
+}
+localStorage.setItem('smartroom_gh_token', token);
+btn.disabled = true;
+btn.innerText = 'Publicando alteração...';
+status.style.display = 'none';
+const passosArray = document.getElementById('mapa_passos').value
+.split('\n')
+.map(l => l.trim())
+.filter(l => l !== '');
+const novoJson = {
+atualizado_em: document.getElementById('atualizado_em').value,
+disciplina: document.getElementById('disciplina').value,
+sigla: document.getElementById('sigla').value,
+professor: document.getElementById('professor').value,
+sala_anterior: document.getElementById('sala_anterior').value,
+nova_sala: document.getElementById('nova_sala').value,
+motivo: document.getElementById('motivo').value,
+mapa: {
+titulo: document.getElementById('mapa_titulo').value,
+passos: passosArray
+}
+};
+try {
+const urlApi = https://github.com{USUARIO}/${REPO}/contents/${ARQUIVO};
+const getRes = await fetch(urlApi, {
+headers: { 'Authorization': Bearer ${token} }
+});
+if (!getRes.ok) throw new Error('Falha ao conectar. Verifique o Token.');
+const fileData = await getRes.json();
+const conteudoBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(novoJson, null, 2))));
+const putRes = await fetch(urlApi, {
+method: 'PUT',
+headers: {
+'Authorization': Bearer ${token},
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+message: Remanejamento: ${novoJson.sigla} para ${novoJson.nova_sala},
+content: conteudoBase64,
+sha: fileData.sha
+})
+});
+if (!putRes.ok) throw new Error('Erro ao salvar no repositório.');
+status.className = 'status ok';
+status.innerText = '✅ Publicado! A tela dos alunos será atualizada em instantes.';
+} catch (err) {
+status.className = 'status err';
+status.innerText = '❌ ' + err.message;
+} finally {
+btn.disabled = false;
+btn.innerText = 'Publicar Alteração Agora';
+}
+}
+
+
+
+<FollowUp>
+Assim que colar e salvar no VS Code, me avise se deu certo o envio pelo `git push` ou se quer ajuda para testar o acesso pelo celular!
+</FollowUp>
