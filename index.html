@@ -245,3 +245,111 @@
           Confirmar Ciência
         </button>
         <button id="btnCopiar" class="btn btn-secondary" onclick="copiarAviso()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Copiar Aviso
+        </button>
+        <button class="btn btn-secondary" onclick="abrirMapa()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+          Ver Mapa do Bloco
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalMapa" class="modal-overlay" onclick="fecharMapa()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="mapaTitulo">Localização: Bloco B - Térreo</span>
+      </div>
+      <div class="map-placeholder">
+        <strong id="mapaCabecalho">Como chegar na Sala 102:</strong>
+        <div id="mapaPassos">1. Saia do Bloco A pela passarela central.<br>2. Siga em direção à recepção do Bloco B.<br>3. A Sala 102 fica no corredor à direita, logo após a coordenação (Térreo).</div>
+      </div>
+      <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="fecharMapa()">Entendi</button>
+    </div>
+  </div>
+
+  <script>
+    const dadosPadrao = {
+      atualizado_em: "10:15",
+      disciplina: "Desenvolvimento de Aplicações Corporativas (DAC)",
+      sigla: "DAC",
+      professor: "Prof. André Cardoso",
+      sala_anterior: "Sala 303 (Bloco A)",
+      nova_sala: "Sala 102 (Bloco B - Térreo)",
+      motivo: "O ar condicionado parou de funcionar inesperadamente e o ambiente ficou superaquecido para a aplicação da prova.",
+      mapa: {
+        titulo: "Localização: Bloco B - Térreo",
+        cabecalho: "Como chegar na Sala 102:",
+        passos: [
+          "1. Saia do Bloco A pela passarela central.",
+          "2. Siga em direção à recepção do Bloco B.",
+          "3. A Sala 102 fica no corredor à direita, logo após a coordenação (Térreo)."
+        ]
+      }
+    };
+
+    let dadosAtuais = dadosPadrao;
+
+    function preencherTela(dados) {
+      dadosAtuais = dados;
+      document.getElementById('hora').innerText = `Atualizado às ${dados.atualizado_em}`;
+      document.getElementById('disciplina').innerText = dados.disciplina;
+      document.getElementById('professor').innerText = dados.professor;
+      document.getElementById('salaAnterior').innerText = dados.sala_anterior;
+      document.getElementById('novaSala').innerText = dados.nova_sala;
+      document.getElementById('motivo').innerText = dados.motivo;
+
+      if (dados.mapa) {
+        document.getElementById('mapaTitulo').innerText = dados.mapa.titulo;
+        document.getElementById('mapaCabecalho').innerText = dados.mapa.cabecalho;
+        document.getElementById('mapaPassos').innerHTML = dados.mapa.passos.join('<br>');
+      }
+      verificarConfirmacaoSalva();
+    }
+
+    async function carregarBancoDeDados() {
+      try {
+        const resposta = await fetch('./dados.json?t=' + new Date().getTime());
+        if (!resposta.ok) throw new Error('JSON não encontrado');
+        const dadosJson = await resposta.json();
+        preencherTela(dadosJson);
+      } catch (erro) {
+        preencherTela(dadosPadrao);
+      }
+    }
+
+    function confirmarLeitura() {
+      const chave = `ciencia_${dadosAtuais.sigla}_${dadosAtuais.atualizado_em}`;
+      localStorage.setItem(chave, 'true');
+      aplicarEstadoConfirmado();
+    }
+
+    function verificarConfirmacaoSalva() {
+      const chave = `ciencia_${dadosAtuais.sigla}_${dadosAtuais.atualizado_em}`;
+      if (localStorage.getItem(chave) === 'true') aplicarEstadoConfirmado();
+    }
+
+    function aplicarEstadoConfirmado() {
+      const btn = document.getElementById('btnConfirmar');
+      btn.classList.add('confirmed');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ciência Confirmada`;
+    }
+
+    function copiarAviso() {
+      const btn = document.getElementById('btnCopiar');
+      const conteudoOriginal = btn.innerHTML;
+      const texto = `⚠️ *ALTERAÇÃO DE SALA* - ${dadosAtuais.sigla} (${dadosAtuais.professor})\n❌ De: ${dadosAtuais.sala_anterior}\n✅ Para: ${dadosAtuais.nova_sala}\nMotivo: ${dadosAtuais.motivo}`;
+      navigator.clipboard.writeText(texto);
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Aviso Copiado!`;
+      setTimeout(() => btn.innerHTML = conteudoOriginal, 2500);
+    }
+
+    function abrirMapa() { document.getElementById('modalMapa').style.display = 'flex'; }
+    function fecharMapa() { document.getElementById('modalMapa').style.display = 'none'; }
+
+    carregarBancoDeDados();
+  </script>
+</body>
+</html>
