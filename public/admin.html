@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartRoom — Painel de Apoio</title>
+  <link href="https://googleapis.com" rel="stylesheet">
+  <style>
+    :root {
+      --emerald-400: #34d399;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --bg-base: #070b0e;
+      --card-glass: rgba(17, 25, 33, 0.9);
+      --surface: rgba(255, 255, 255, 0.05);
+      --border-light: rgba(255, 255, 255, 0.12);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      background-color: var(--bg-base);
+      background-image: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15) 0%, transparent 60%);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px 14px;
+      min-height: 100vh;
+    }
+    .container {
+      background: var(--card-glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 600px;
+      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .header h1 { font-size: 1.2rem; font-weight: 800; color: var(--emerald-400); }
+    .header-actions { display: flex; gap: 14px; align-items: center; }
+    .header a, .btn-sair { color: var(--text-secondary); text-decoration: none; font-size: 0.82rem; background: none; border: none; cursor: pointer; font-weight: 600; }
+    .header a:hover, .btn-sair:hover { color: #fff; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); font-weight: 700; margin-bottom: 6px; }
+    input, textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    input:focus, textarea:focus { border-color: var(--emerald-400); }
+    textarea { resize: vertical; min-height: 76px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .quick-reasons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .chip {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--emerald-400);
+      padding: 7px 11px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chip:hover { background: var(--emerald-600); color: #fff; }
+    .token-box {
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      padding: 14px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+    }
+    .token-box summary { cursor: pointer; font-size: 0.8rem; font-weight: 700; color: #93c5fd; }
+    .token-content { margin-top: 10px; }
+    .token-box small { display: block; color: #93c5fd; font-size: 0.76rem; margin-top: 6px; }
+    .btn {
+      width: 100%;
+      background: var(--emerald-600);
+      color: #fff;
+      border: 1px solid var(--emerald-400);
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn:hover { background: var(--emerald-500); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: none;
+    }
+    .status.ok { display: block; background: rgba(16, 185, 129, 0.15); color: var(--emerald-400); border: 1px solid var(--emerald-500); }
+    .status.err { display: block; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid #ef4444; }
+    #loginScreen { max-width: 400px; margin-top: 40px; text-align: center; }
+    #loginScreen h2 { color: var(--emerald-400); font-size: 1.4rem; margin-bottom: 8px; }
+    #loginScreen p { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 20px; }
+    @media (max-width: 500px) { .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="container">
+    <h2>Acesso Restrito — Apoio</h2>
+    <p>Digite a senha da equipe de apoio para gerenciar as salas.</p>
+    <div class="form-group">
+      <input type="password" id="senhaApoio" placeholder="Senha de acesso">
+    </div>
+    <button type="button" id="btnEntrar" class="btn">Entrar no Painel</button>
+    <div id="loginErro" class="status err"></div>
+  </div>
+  <div id="painelAdmin" class="container" style="display: none;">
+    <div class="header">
+      <h1>SmartRoom Apoio</h1>
+      <div class="header-actions">
+        <a href="./index.html" target="_blank">Ver Site ➔</a>
+        <button type="button" id="btnSair" class="btn-sair">Sair</button>
+      </div>
+    </div>
+    <details class="token-box" id="tokenDetails">
+      <summary>⚙️ Configurar Chave de Publicação (GitHub Token)</summary>
+      <div class="token-content">
+        <input type="password" id="ghToken" placeholder="github_pat_xxxxxxxxxxxx">
+        <small>Configurado uma única vez neste computador ou celular.</small>
+      </div>
+    </details>
+    <div class="row">
+      <div class="form-group">
+        <label>Horário da Atualização</label>
+        <input type="text" id="atualizado_em" placeholder="Ex: 14:30">
+      </div>
+      <div class="form-group">
+        <label>Sigla da Disciplina</label>
+        <input type="text" id="sigla" placeholder="Ex: DAC">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Nome Completo da Disciplina</label>
+      <input type="text" id="disciplina" placeholder="Ex: Desenvolvimento de Aplicações Corporativas (DAC)">
+    </div>
+    <div class="form-group">
+      <label>Professor(a)</label>
+      <input type="text" id="professor" placeholder="Ex: Prof. André Cardoso">
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>Sala Anterior</label>
+        <input type="text" id="sala_anterior" placeholder="Ex: Sala 303 (Bloco A)">
+      </div>
+      <div class="form-group">
+        <label>Nova Sala</label>
+        <input type="text" id="nova_sala" placeholder="Ex: Sala 102 (Bloco B - Térreo)">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Motivo Rápido (Toque para preencher)</label>
+      <div class="quick-reasons">
+        <button type="button" class="chip" data-motivo="O ar-condicionado apresentou defeito e a sala ficou superaquecida para a aula.">❄️ Ar-condicionado</button>
+        <button type="button" class="chip" data-motivo="A sala original já estava reservada para outra atividade acadêmica.">📅 Sala já reservada</button>
+        <button type="button" class="chip" data-motivo="O projetor e os equipamentos multimídia da sala apresentaram falha técnica.">📽️ Projetor com defeito</button>
+        <button type="button" class="chip" data-motivo="Manutenção elétrica ou estrutural emergencial na sala original.">⚡ Manutenção na sala</button>
+        <button type="button" class="chip" data-motivo="Remanejamento para melhor acomodação da quantidade de alunos da turma.">👥 Capacidade da sala</button>
+      </div>
+      <textarea id="motivo" placeholder="Ou digite um motivo personalizado..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Título do Mapa</label>
+      <input type="text" id="mapa_titulo" placeholder="Ex: Localização: Bloco B - Térreo">
+    </div>
+    <div class="form-group">
+      <label>Instruções de Como Chegar (1 passo por linha)</label>
+      <textarea id="mapa_passos" placeholder="1. Saia do Bloco A pela passarela central"></textarea>
+    </div>
+    <button type="button" id="btnSalvar" class="btn">Publicar Alteração Agora</button>
+    <div id="statusMsg" class="status"></div>
+  </div>
+  <script>
+    const USUARIO = 'silvabmx23-cyber';
+    const REPO = 'smartroom-remanejamento';
+    const ARQUIVO = 'public/dados.json';
+    const SENHA_APOIO = 'apoio2026';
+
+    function preencherHoraAtual() {
+      const agora = new Date();
+      document.getElementById('atualizado_em').value = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
+    }
+
+    async function abrirPainel() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('painelAdmin').style.display = 'block';
+      const tokenSalvo = localStorage.getItem('smartroom_gh_token');
+      if (tokenSalvo) { document.getElementById('ghToken').value = tokenSalvo; } else { document.getElementById('tokenDetails').open = true; }
+      preencherHoraAtual();
+      try {
+        const res = await fetch('./dados.json?t=' + Date.now());
+        const d = await res.json();
+        document.getElementById('sigla').value = d.sigla || '';
+        document.getElementById('disciplina').value = d.disciplina || '';
+        document.getElementById('professor').value = d.professor || '';
+        document.getElementById('sala_anterior').value = d.sala_anterior || '';
+        document.getElementById('nova_sala').value = d.nova_sala || '';
+        document.getElementById('motivo').value = d.motivo || '';
+        if (d.mapa) {
+          document.getElementById('mapa_titulo').value = d.mapa.titulo || '';
+          document.getElementById('mapa_passos').value = (d.mapa.passos || []).join('\n');
+        }
+      } catch (e) {}
+    }
+
+    function tentarLogin() {
+      if (document.getElementById('senhaApoio').value.trim() === SENHA_APOIO) {
+        localStorage.setItem('smartroom_auth', 'ok');
+        abrirPainel();
+      } else {
+        const erro = document.getElementById('loginErro');
+        erro.style.display = 'block';
+        erro.innerText = 'Senha incorreta. Digite apoio2026.';
+      }
+    }
+
+    document.getElementById('btnEntrar').addEventListener('click', tentarLogin);
+    document.getElementById('senhaApoio').addEventListener('keydown', e => { if (e.key === 'Enter') tentarLogin(); });
+    document.getElementById('btnSair').addEventListener('click', () => { localStorage.removeItem('smartroom_auth'); location.reload(); });
+    document.querySelectorAll('.chip').forEach(btn => btn.addEventListener('click', () => { document.getElementById('motivo').value = btn.getAttribute('data-motivo'); }));
+
+    document.getElementById('btnSalvar').addEventListener('click', async () => {
+      const token = document.getElementById('ghToken').value.trim();
+      const status = document.getElementById('statusMsg');
+      const btn = document.getElementById('btnSalvar');
+      if (!token) { document.getElementById('tokenDetails').open = true; status.className = 'status err'; status.innerText = 'Configure o GitHub Token acima.'; return; }
+      localStorage.setItem('smartroom_gh_token', token);
+      btn.disabled = true; btn.innerText = 'Publicando...'; status.style.display = 'none';
+      const passosArray = document.getElementById('mapa_passos').value.split('\n').map(l => l.trim()).filter(l => l !== '');
+      const novoJson = {
+        atualizado_em: document.getElementById('atualizado_em').value,
+        disciplina: document.getElementById('disciplina').value,
+        sigla: document.getElementById('sigla').value,
+        professor: document.getElementById('professor').value,
+        sala_anterior: document.getElementById('sala_anterior').value,
+        nova_sala: document.getElementById('nova_sala').value,
+        motivo: document.getElementById('motivo').value,
+        mapa: { titulo: document.getElementById('mapa_titulo').value, passos: passosArray }
+      };
+      try {
+        const urlApi = `https://github.com{USUARIO}/${REPO}/contents/${ARQUIVO}`;
+        const getRes = await fetch(urlApi, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!getRes.ok) throw new Error('Falha ao conectar. Verifique o Token.');
+        const fileData = await getRes.json();
+        const conteudoBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(novoJson, null, 2))));
+        const putRes = await fetch(urlApi, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `Remanejamento: ${novoJson.sigla}`, content: conteudoBase64, sha: fileData.sha })
+        });
+        if (!putRes.ok) throw new Error('Erro ao salvar.');
+        status.className = 'status ok'; status.innerText = '✅ Publicado com sucesso!';
+      } catch (err) { status.className = 'status err'; status.innerText = '❌ ' + err.message; }
+      finally { btn.disabled = false; btn.innerText = 'Publicar Alteração Agora'; }
+    });
+    if (localStorage.getItem('smartroom_auth') === 'ok') abrirPainel();
+  </script>
+</body>
+</html>
