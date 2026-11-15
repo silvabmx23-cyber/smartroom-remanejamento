@@ -296,3 +296,29 @@ window.onload = function() {
 carregarDados();
 setInterval(carregarDados, 30000);
 };
+const j = await r.json();
+
+        document.getElementById('hora').innerText = 'Atualizado às ' + (j.atualizado_em || '--:--');
+        document.getElementById('viewDisc').innerText = j.disciplina || 'Sem disciplina informada';
+        document.getElementById('viewProf').innerText = j.professor || '--';
+        document.getElementById('viewAnt').innerText = j.sala_anterior || '--';
+        document.getElementById('viewNova').innerText = j.nova_sala || '--';
+        document.getElementById('viewMotivo').innerText = j.motivo || '--';
+
+        if (j.mapa) {
+          document.getElementById('modalTitulo').innerText = '📍 ' + (j.mapa.titulo || 'Como Chegar');
+          const passos = j.mapa.passos || [];
+          document.getElementById('modalPassos').innerText = passos.length ? passos.join('\n\n') : 'Instruções não cadastradas.';
+        }
+      } catch (e) {
+        console.error('Erro ao carregar dados.json', e);
+      }
+    }
+
+    window.onload = function() {
+      carregarDados();
+      setInterval(carregarDados, 30000);
+    };
+  </script>
+</body>
+</html>
