@@ -37,12 +37,10 @@
       <h1>SmartRoom Apoio</h1>
       <a href="./index.html" target="_blank">Ver Site Público ➔</a>
     </div>
-
     <div class="tk">
       <label>Chave de Publicação (GitHub Token)</label>
       <input type="password" id="token" placeholder="github_pat_xxxxxxxxxxxx">
     </div>
-
     <div class="row">
       <div class="fg"><label>Horário da Atualização</label><input type="text" id="hora"></div>
       <div class="fg"><label>Sigla</label><input type="text" id="sigla"></div>
@@ -56,10 +54,10 @@
     <div class="fg">
       <label>Motivo Rápido (Clique para preencher)</label>
       <div class="chips">
-        <button type="button" class="chip" onclick="setMotivo('O ar-condicionado apresentou defeito e a sala ficou superaquecida.')">❄️ Ar-condicionado</button>
-        <button type="button" class="chip" onclick="setMotivo('A sala original já estava reservada para outra atividade acadêmica.')">📅 Sala reservada</button>
-        <button type="button" class="chip" onclick="setMotivo('O projetor e equipamentos multimídia apresentaram falha técnica.')">📽️ Projetor com defeito</button>
-        <button type="button" class="chip" onclick="setMotivo('Manutenção elétrica ou estrutural emergencial na sala original.')">⚡ Manutenção</button>
+        <button type="button" class="chip" onclick="setMotivo('O ar-condicionado apresentou defeito e a sala ficou superaquecida.')">Ar-condicionado</button>
+        <button type="button" class="chip" onclick="setMotivo('A sala original já estava reservada para outra atividade acadêmica.')">Sala reservada</button>
+        <button type="button" class="chip" onclick="setMotivo('O projetor e equipamentos multimídia apresentaram falha técnica.')">Projetor com defeito</button>
+        <button type="button" class="chip" onclick="setMotivo('Manutenção elétrica ou estrutural emergencial na sala original.')">Manutenção</button>
       </div>
       <textarea id="motivo"></textarea>
     </div>
@@ -68,14 +66,9 @@
     <button type="button" id="btnSave" class="btn" onclick="publicar()">Publicar Alteração Agora</button>
     <div id="status" class="msg"></div>
   </div>
-
   <script>
     const API_URL = 'https://github.com';
-
-    function setMotivo(txt) {
-      document.getElementById('motivo').value = txt;
-    }
-
+    function setMotivo(txt) { document.getElementById('motivo').value = txt; }
     window.onload = async function() {
       const tk = localStorage.getItem('sr_tk');
       if (tk) document.getElementById('token').value = tk;
@@ -96,23 +89,13 @@
         }
       } catch (e) {}
     };
-
     async function publicar() {
       const tk = document.getElementById('token').value.trim();
       const st = document.getElementById('status');
       const btn = document.getElementById('btnSave');
-      if (!tk) {
-        st.style.display = 'block';
-        st.style.background = 'rgba(239,68,68,.15)';
-        st.style.color = '#f87171';
-        st.innerText = 'Cole o GitHub Token no campo azul acima.';
-        return;
-      }
+      if (!tk) { st.style.display = 'block'; st.style.background = 'rgba(239,68,68,.15)'; st.style.color = '#f87171'; st.innerText = 'Cole o GitHub Token no campo azul acima.'; return; }
       localStorage.setItem('sr_tk', tk);
-      btn.disabled = true;
-      btn.innerText = 'Publicando...';
-      st.style.display = 'none';
-
+      btn.disabled = true; btn.innerText = 'Publicando...'; st.style.display = 'none';
       const payload = {
         atualizado_em: document.getElementById('hora').value,
         disciplina: document.getElementById('disc').value,
@@ -121,12 +104,8 @@
         sala_anterior: document.getElementById('ant').value,
         nova_sala: document.getElementById('nova').value,
         motivo: document.getElementById('motivo').value,
-        mapa: {
-          titulo: document.getElementById('mTit').value,
-          passos: document.getElementById('mPassos').value.split('\n').map(x => x.trim()).filter(Boolean)
-        }
+        mapa: { titulo: document.getElementById('mTit').value, passos: document.getElementById('mPassos').value.split('\n').map(x => x.trim()).filter(Boolean) }
       };
-
       try {
         const g = await fetch(API_URL, { headers: { Authorization: 'Bearer ' + tk } });
         if (!g.ok) throw new Error('Token inválido ou sem permissão (Erro ' + g.status + ').');
@@ -138,19 +117,10 @@
           body: JSON.stringify({ message: 'Atualiza sala ' + payload.sigla, content: b64, sha: info.sha })
         });
         if (!p.ok) throw new Error('Falha ao salvar (Erro ' + p.status + ').');
-        st.style.display = 'block';
-        st.style.background = 'rgba(16,185,129,.15)';
-        st.style.color = '#34d399';
-        st.innerText = '✅ Publicado com sucesso! O site dos alunos atualizará em 30 segundos.';
+        st.style.display = 'block'; st.style.background = 'rgba(16,185,129,.15)'; st.style.color = '#34d399'; st.innerText = 'Publicado com sucesso! O site dos alunos atualizará em 30 segundos.';
       } catch (err) {
-        st.style.display = 'block';
-        st.style.background = 'rgba(239,68,68,.15)';
-        st.style.color = '#f87171';
-        st.innerText = '❌ ' + err.message;
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Publicar Alteração Agora';
-      }
+        st.style.display = 'block'; st.style.background = 'rgba(239,68,68,.15)'; st.style.color = '#f87171'; st.innerText = 'Erro: ' + err.message;
+      } finally { btn.disabled = false; btn.innerText = 'Publicar Alteração Agora'; }
     }
   </script>
 </body>
