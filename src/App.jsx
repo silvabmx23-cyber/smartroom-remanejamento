@@ -3,12 +3,14 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import Notificacao from './Notificacao';
 
+const projetoId = "smartroom-remanejamento";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBXGRZsJc4GM-zwjaImG1Gs0LV4JlLuz0c",
-  authDomain: "://firebaseapp.com",
-  databaseURL: "https://firebaseio.com",
-  projectId: "smartroom-remanejamento",
-  storageBucket: "smartroom-remanejamento.firebasestorage.app",
+  authDomain: projetoId + ".firebaseapp.com",
+  databaseURL: "https://" + projetoId + "://firebaseio.com",
+  projectId: projetoId,
+  storageBucket: projetoId + ".firebasestorage.app",
   messagingSenderId: "465695973098",
   appId: "1:465695973098:web:f60b648cba5761f542c193",
   measurementId: "G-873M1VZ98X"
