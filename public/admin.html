@@ -22,13 +22,16 @@
     .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 9px; }
     .chip { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3); color: var(--e4); padding: 6px 11px; border-radius: 20px; font-size: .77rem; font-weight: 600; cursor: pointer; }
     .chip:hover { background: var(--e6); color: #fff; }
-    .tk { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.25); padding: 12px; border-radius: 12px; margin-bottom: 18px; }
-    .tk label { color: #93c5fd; }
+    .auth-box { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.25); padding: 14px; border-radius: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .auth-info { font-size: .82rem; color: #93c5fd; }
+    .btn-auth { background: #ffffff; color: #0f172a; border: none; padding: 9px 14px; border-radius: 8px; font-size: .82rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn-sair { background: rgba(239,68,68,.2); color: #fca5a5; border: 1px solid rgba(239,68,68,.4); }
     .btn { width: 100%; background: var(--e6); color: #fff; border: 1px solid var(--e4); padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 6px; }
     .btn:hover { background: var(--e5); }
     .btn:disabled { opacity: .6; cursor: not-allowed; }
     .msg { margin-top: 14px; padding: 12px; border-radius: 10px; text-align: center; font-size: .88rem; font-weight: 600; display: none; }
-    @media (max-width: 500px) { .row { grid-template-columns: 1fr; } }
+    .hidden { display: none !important; }
+    @media (max-width: 500px) { .row { grid-template-columns: 1fr; } .auth-box { flex-direction: column; text-align: center; } }
   </style>
 </head>
 <body>
@@ -37,46 +40,101 @@
       <h1>SmartRoom Apoio</h1>
       <a href="./index.html" target="_blank">Ver Site Público ➔</a>
     </div>
-    <div class="tk">
-      <label>Chave de Publicação (GitHub Token)</label>
-      <input type="password" id="token" placeholder="github_pat_xxxxxxxxxxxx">
+
+    <!-- Barra de Login Google -->
+    <div class="auth-box">
+      <div class="auth-info" id="user-status">Faça login com Google para habilitar a edição pelo celular.</div>
+      <button type="button" id="btn-login" class="btn-auth">Entrar com Google</button>
+      <button type="button" id="btn-logout" class="btn-auth btn-sair hidden">Sair</button>
     </div>
-    <div class="row">
-      <div class="fg"><label>Horário da Atualização</label><input type="text" id="hora"></div>
-      <div class="fg"><label>Sigla</label><input type="text" id="sigla"></div>
-    </div>
-    <div class="fg"><label>Disciplina</label><input type="text" id="disc"></div>
-    <div class="fg"><label>Professor(a)</label><input type="text" id="prof"></div>
-    <div class="row">
-      <div class="fg"><label>Sala Anterior</label><input type="text" id="ant"></div>
-      <div class="fg"><label>Nova Sala</label><input type="text" id="nova"></div>
-    </div>
-    <div class="fg">
-      <label>Motivo Rápido (Clique para preencher)</label>
-      <div class="chips">
-        <button type="button" class="chip" onclick="setMotivo('O ar-condicionado apresentou defeito e a sala ficou superaquecida.')">Ar-condicionado</button>
-        <button type="button" class="chip" onclick="setMotivo('A sala original já estava reservada para outra atividade acadêmica.')">Sala reservada</button>
-        <button type="button" class="chip" onclick="setMotivo('O projetor e equipamentos multimídia apresentaram falha técnica.')">Projetor com defeito</button>
-        <button type="button" class="chip" onclick="setMotivo('Manutenção elétrica ou estrutural emergencial na sala original.')">Manutenção</button>
+
+    <!-- Formulário do Apoio -->
+    <div id="form-area" class="hidden">
+      <div class="row">
+        <div class="fg"><label>Horário da Atualização</label><input type="text" id="hora"></div>
+        <div class="fg"><label>Sigla</label><input type="text" id="sigla"></div>
       </div>
-      <textarea id="motivo"></textarea>
+      <div class="fg"><label>Disciplina</label><input type="text" id="disc"></div>
+      <div class="fg"><label>Professor(a)</label><input type="text" id="prof"></div>
+      <div class="row">
+        <div class="fg"><label>Sala Anterior</label><input type="text" id="ant"></div>
+        <div class="fg"><label>Nova Sala</label><input type="text" id="nova"></div>
+      </div>
+      <div class="fg">
+        <label>Motivo Rápido (Clique para preencher)</label>
+        <div class="chips">
+          <button type="button" class="chip" onclick="setMotivo('O ar-condicionado apresentou defeito e a sala ficou superaquecida.')">Ar-condicionado</button>
+          <button type="button" class="chip" onclick="setMotivo('A sala original já estava reservada para outra atividade acadêmica.')">Sala reservada</button>
+          <button type="button" class="chip" onclick="setMotivo('O projetor e equipamentos multimídia apresentaram falha técnica.')">Projetor com defeito</button>
+          <button type="button" class="chip" onclick="setMotivo('Manutenção elétrica ou estrutural emergencial na sala original.')">Manutenção</button>
+        </div>
+        <textarea id="motivo"></textarea>
+      </div>
+      <div class="fg"><label>Título do Mapa</label><input type="text" id="mTit"></div>
+      <div class="fg"><label>Instruções de Como Chegar (1 por linha)</label><textarea id="mPassos"></textarea></div>
+      <button type="button" id="btnSave" class="btn">Publicar Alteração Agora</button>
+      <div id="status" class="msg"></div>
     </div>
-    <div class="fg"><label>Título do Mapa</label><input type="text" id="mTit"></div>
-    <div class="fg"><label>Instruções de Como Chegar (1 por linha)</label><textarea id="mPassos"></textarea></div>
-    <button type="button" id="btnSave" class="btn" onclick="publicar()">Publicar Alteração Agora</button>
-    <div id="status" class="msg"></div>
   </div>
+
   <script>
-    const API_URL = 'https://github.com';
     function setMotivo(txt) { document.getElementById('motivo').value = txt; }
-    window.onload = async function() {
-      const tk = localStorage.getItem('sr_tk');
-      if (tk) document.getElementById('token').value = tk;
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://gstatic.com";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://gstatic.com";
+    import { getDatabase, ref, set, get } from "https://gstatic.com";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXGRZsJc4GM-zwjaImG1Gs0LV4JlLuz0c",
+      authDomain: "://firebaseapp.com",
+      databaseURL: "https://firebaseio.com",
+      projectId: "smartroom-remanejamento",
+      storageBucket: "smartroom-remanejamento.firebasestorage.app",
+      messagingSenderId: "465695973098",
+      appId: "1:465695973098:web:f60b648cba5761f542c193",
+      measurementId: "G-873M1VZ98X"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const provider = new GoogleAuthProvider();
+
+    const btnLogin = document.getElementById('btn-login');
+    const btnLogout = document.getElementById('btn-logout');
+    const formArea = document.getElementById('form-area');
+    const userStatus = document.getElementById('user-status');
+
+    btnLogin.onclick = () => signInWithPopup(auth, provider).catch(e => alert("Erro no login: " + e.message));
+    btnLogout.onclick = () => signOut(auth);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        userStatus.innerText = `Conectado como: ${user.email}`;
+        btnLogin.classList.add('hidden');
+        btnLogout.classList.remove('hidden');
+        formArea.classList.remove('hidden');
+        await carregarDados();
+      } else {
+        userStatus.innerText = 'Faça login com Google para habilitar a edição pelo celular.';
+        btnLogin.classList.remove('hidden');
+        btnLogout.classList.add('hidden');
+        formArea.classList.add('hidden');
+      }
+    });
+
+    async function carregarDados() {
       const d = new Date();
       document.getElementById('hora').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
       try {
-        const r = await fetch('./dados.json?t=' + Date.now());
-        const j = await r.json();
+        const snap = await get(ref(db, 'remanejamento/atual'));
+        let j = snap.exists() ? snap.val() : null;
+        if (!j) {
+          const r = await fetch('./dados.json?t=' + Date.now());
+          j = await r.json();
+        }
         document.getElementById('sigla').value = j.sigla || '';
         document.getElementById('disc').value = j.disciplina || '';
         document.getElementById('prof').value = j.professor || '';
@@ -88,14 +146,15 @@
           document.getElementById('mPassos').value = (j.mapa.passos || []).join('\n');
         }
       } catch (e) {}
-    };
-    async function publicar() {
-      const tk = document.getElementById('token').value.trim();
+    }
+
+    document.getElementById('btnSave').onclick = async function() {
       const st = document.getElementById('status');
       const btn = document.getElementById('btnSave');
-      if (!tk) { st.style.display = 'block'; st.style.background = 'rgba(239,68,68,.15)'; st.style.color = '#f87171'; st.innerText = 'Cole o GitHub Token no campo azul acima.'; return; }
-      localStorage.setItem('sr_tk', tk);
-      btn.disabled = true; btn.innerText = 'Publicando...'; st.style.display = 'none';
+      btn.disabled = true;
+      btn.innerText = 'Publicando...';
+      st.style.display = 'none';
+
       const payload = {
         atualizado_em: document.getElementById('hora').value,
         disciplina: document.getElementById('disc').value,
@@ -104,24 +163,26 @@
         sala_anterior: document.getElementById('ant').value,
         nova_sala: document.getElementById('nova').value,
         motivo: document.getElementById('motivo').value,
-        mapa: { titulo: document.getElementById('mTit').value, passos: document.getElementById('mPassos').value.split('\n').map(x => x.trim()).filter(Boolean) }
+        mapa: {
+          titulo: document.getElementById('mTit').value,
+          passos: document.getElementById('mPassos').value.split('\n').map(x => x.trim()).filter(Boolean)
+        }
       };
+
       try {
-        const g = await fetch(API_URL, { headers: { Authorization: 'Bearer ' + tk } });
-        if (!g.ok) throw new Error('Token inválido ou sem permissão (Erro ' + g.status + ').');
-        const info = await g.json();
-        const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
-        const p = await fetch(API_URL, {
-          method: 'PUT',
-          headers: { Authorization: 'Bearer ' + tk, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: 'Atualiza sala ' + payload.sigla, content: b64, sha: info.sha })
-        });
-        if (!p.ok) throw new Error('Falha ao salvar (Erro ' + p.status + ').');
-        st.style.display = 'block'; st.style.background = 'rgba(16,185,129,.15)'; st.style.color = '#34d399'; st.innerText = 'Publicado com sucesso! O site dos alunos atualizará em 30 segundos.';
-      } catch (err) {
-        st.style.display = 'block'; st.style.background = 'rgba(239,68,68,.15)'; st.style.color = '#f87171'; st.innerText = 'Erro: ' + err.message;
-      } finally { btn.disabled = false; btn.innerText = 'Publicar Alteração Agora'; }
-    }
-  </script>
-</body>
-</html>
+        await set(ref(db, 'remanejamento/atual'), payload);
+        st.style.display = 'block';
+        st.style.background = 'rgba(16,185,129,.15)';
+st.style.color = '#34d399';
+st.innerText = 'Publicado com sucesso! A tela dos alunos foi atualizada em tempo real.';
+} catch (err) {
+st.style.display = 'block';
+st.style.background = 'rgba(239,68,68,.15)';
+st.style.color = '#f87171';
+st.innerText = 'Erro ao salvar: ' + err.message;
+} finally {
+btn.disabled = false;
+btn.innerText = 'Publicar Alteração Agora';
+}
+};
+      
