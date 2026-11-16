@@ -88,8 +88,8 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyBXGRZsJc4GM-zwjaImG1Gs0LV4JlLuz0c",
-      authDomain: "://firebaseapp.com",
-      databaseURL: "https://firebaseio.com",
+      authDomain: "smartroom-remanejamento.firebaseapp.com",
+      databaseURL: "https://smartroom-remanejamento-default-rtdb.firebaseio.com",
       projectId: "smartroom-remanejamento",
       storageBucket: "smartroom-remanejamento.firebasestorage.app",
       messagingSenderId: "465695973098",
@@ -106,8 +106,15 @@
     const btnLogout = document.getElementById('btn-logout');
     const formArea = document.getElementById('form-area');
     const userStatus = document.getElementById('user-status');
+    const btnSave = document.getElementById('btnSave');
+    const statusMsg = document.getElementById('status');
 
-    btnLogin.onclick = () => signInWithPopup(auth, provider).catch(e => alert("Erro no login: " + e.message));
+    btnLogin.onclick = () => {
+      signInWithPopup(auth, provider).catch(e => {
+        alert("Erro no login: " + e.message);
+      });
+    };
+
     btnLogout.onclick = () => signOut(auth);
 
     onAuthStateChanged(auth, async (user) => {
@@ -138,51 +145,47 @@
         document.getElementById('sigla').value = j.sigla || '';
         document.getElementById('disc').value = j.disciplina || '';
         document.getElementById('prof').value = j.professor || '';
-        document.getElementById('ant').value = j.sala_anterior || '';
-        document.getElementById('nova').value = j.nova_sala || '';
+        document.getElementById('ant').value = j.salaAnterior || '';
+        document.getElementById('nova').value = j.novaSala || '';
         document.getElementById('motivo').value = j.motivo || '';
-        if (j.mapa) {
-          document.getElementById('mTit').value = j.mapa.titulo || '';
-          document.getElementById('mPassos').value = (j.mapa.passos || []).join('\n');
-        }
-      } catch (e) {}
+        document.getElementById('mTit').value = j.mapaTitulo || '';
+        document.getElementById('mPassos').value = Array.isArray(j.mapaPassos) ? j.mapaPassos.join('\n') : (j.mapaPassos || '');
+      } catch (e) {
+        console.error("Erro ao carregar dados:", e);
+      }
     }
 
-    document.getElementById('btnSave').onclick = async function() {
-      const st = document.getElementById('status');
-      const btn = document.getElementById('btnSave');
-      btn.disabled = true;
-      btn.innerText = 'Publicando...';
-      st.style.display = 'none';
+    btnSave.onclick = async () => {
+      btnSave.disabled = true;
+      btnSave.innerText = 'Publicando...';
+      statusMsg.style.display = 'none';
 
       const payload = {
-        atualizado_em: document.getElementById('hora').value,
-        disciplina: document.getElementById('disc').value,
+        horario: document.getElementById('hora').value,
         sigla: document.getElementById('sigla').value,
+        disciplina: document.getElementById('disc').value,
         professor: document.getElementById('prof').value,
-        sala_anterior: document.getElementById('ant').value,
-        nova_sala: document.getElementById('nova').value,
+        salaAnterior: document.getElementById('ant').value,
+        novaSala: document.getElementById('nova').value,
         motivo: document.getElementById('motivo').value,
-        mapa: {
-          titulo: document.getElementById('mTit').value,
-          passos: document.getElementById('mPassos').value.split('\n').map(x => x.trim()).filter(Boolean)
-        }
+        mapaTitulo: document.getElementById('mTit').value,
+        mapaPassos: document.getElementById('mPassos').value.split('\n').filter(linha => linha.trim() !== '')
       };
 
       try {
         await set(ref(db, 'remanejamento/atual'), payload);
-        st.style.display = 'block';
-        st.style.background = 'rgba(16,185,129,.15)';
-st.style.color = '#34d399';
-st.innerText = 'Publicado com sucesso! A tela dos alunos foi atualizada em tempo real.';
-} catch (err) {
-st.style.display = 'block';
-st.style.background = 'rgba(239,68,68,.15)';
-st.style.color = '#f87171';
-st.innerText = 'Erro ao salvar: ' + err.message;
+Use o código com cuidado.
+statusMsg.style.display = 'block';
+statusMsg.style.background = 'rgba(16,185,129,.15)';
+statusMsg.style.color = '#34d399';
+statusMsg.innerText = 'Alteração publicada com sucesso!';
+} catch (e) {
+statusMsg.style.display = 'block';
+statusMsg.style.background = 'rgba(239,68,68,.15)';
+statusMsg.style.color = '#fca5a5';
+statusMsg.innerText = 'Erro ao salvar: ' + e.message;
 } finally {
-btn.disabled = false;
-btn.innerText = 'Publicar Alteração Agora';
+btnSave.disabled = false;
+btnSave.innerText = 'Publicar Alteração Agora';
 }
 };
-      
