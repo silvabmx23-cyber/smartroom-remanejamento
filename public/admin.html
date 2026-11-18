@@ -43,7 +43,6 @@
       <a href="./index.html" target="_blank">Ver Site Público ➔</a>
     </div>
 
-    <!-- Tela de Login E-mail e Senha -->
     <div id="login-box" class="login-card">
       <div class="fg"><label>E-mail do Apoio ou Professor</label><input type="email" id="login-email" placeholder="apoio@unifametro.edu.br"></div>
       <div class="fg"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
@@ -51,13 +50,11 @@
       <div id="login-erro" class="msg" style="color:#fca5a5;background:#451a1a;"></div>
     </div>
 
-    <!-- Barra de Usuário Conectado -->
     <div id="user-bar" class="user-bar hidden">
       <span id="user-email">Conectado</span>
       <button type="button" id="btn-logout" class="btn-sair">Sair</button>
     </div>
 
-    <!-- Formulário de Remanejamento e Catálogo -->
     <div id="form-area" class="hidden">
       <div class="row">
         <div class="fg"><label>Horário</label><input type="text" id="hora"></div>
@@ -98,7 +95,8 @@
       </div>
     </div>
   </div>
-<script type="module">
+
+  <script type="module">
     const base = "https://gstatic.com";
     const { initializeApp } = await import(base + "firebase-app.js");
     const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import(base + "firebase-auth.js");
@@ -143,7 +141,7 @@
         await signInWithEmailAndPassword(auth, email, senha);
       } catch (e) {
         loginErro.style.display = 'block';
-        loginErro.innerText = 'E-mail ou senha incorretos (ou usuário não cadastrado no Firebase).';
+        loginErro.innerText = 'Erro ao entrar: ' + e.message;
       } finally {
         btnLogin.innerText = 'Entrar no Painel';
         btnLogin.disabled = false;
@@ -178,218 +176,65 @@
         document.getElementById('prof').value = j.professor || '';
         document.getElementById('ant').value = j.salaAnterior || '';
         document.getElementById('nova').value = j.novaSala || '';
-        document.getElementById('motivo').value = j.motivo || '';
-        document.getElementById('mTit').value = j.mapaTitulo || '';
-        document.getElementById('mPassos').value = Array.isArray(j.mapaPassos) ? j.mapaPassos.join('\n') : (j.mapaPassos || '');
-      }
-    }
-
-    document.getElementById('btnSave').onclick = async () => {
-      const msg = document.getElementById('status');
-      try {
-        await set(ref(db, 'remanejamento/atual'), {
-          horario: document.getElementById('hora').value.trim(),
-          sigla: document.getElementById('sigla').value.trim(),
-          disciplina: document.getElementById('disc').value.trim(),
-          professor: document.getElementById('prof').value.trim(),
-          salaAnterior: document.getElementById('ant').value.trim(),
-          novaSala: document.getElementById('nova').value.trim(),
-          motivo: document.getElementById('motivo').value.trim(),
-          mapaTitulo: document.getElementById('mTit').value.trim(),
-          mapaPassos: document.getElementById('mPassos').value.split('\n').map(s => s.trim()).filter(Boolean)
-        });
-        msg.style.display = 'block'; msg.style.color = '#34d399';
-        msg.innerText = 'Alteração publicada com sucesso!';
-      } catch (e) {
-        msg.style.display = 'block'; msg.style.color = '#fca5a5';
-        msg.innerText = 'Sem permissão para salvar. Verifique seu e-mail nas regras do Firebase.';
-      }
-    };
-
-    document.getElementById('btnSaveSala').onclick = async () => {
-      const nome = document.getElementById('cad-nome').value.trim();
-      const cap = parseInt(document.getElementById('cad-cap').value, 10);
-      const msg = document.getElementById('status-sala');
-      if (!nome || isNaN(cap)) return alert("Preencha o nome e a capacidade da sala.");
-      const id = nome.toLowerCase().replace(/[^a-z0-9]/g, "_");
-      try {
-        await set(ref(db, 'catalogo_salas/' + id), {
-          nome, capacidade: cap,
-          ar: document.getElementById('cad-ar').value,
-          proj: document.getElementById('cad-proj').value
-        });
-        document.getElementById('cad-nome').value = '';
-        document.getElementById('cad-cap').value = '';
-        msg.style.display = 'block'; msg.style.color = '#34d399';
-        msg.innerText = 'Sala salva no catálogo!';
-      } catch (e) {
-        msg.style.display = 'block'; msg.style.color = '#fca5a5';
-        msg.innerText = 'Erro ao salvar sala.';
-      }
-    };
-
-    function escutarSalas() {
-      const ul = document.getElementById('lista-salas');
-      onValue(ref(db, 'catalogo_salas'), (snap) => {
-        ul.innerHTML = '';
-        const dados = snap.val();
-        if (!dados) return;
-        Object.values(dados).forEach(s => {
-          const li = document.createElement('li');
-          li.className = 'item';
-          li.innerHTML = `<div><strong>${s.nome}</strong><br><small style="color:#94a3b8">Ar: ${s.ar} • Proj: ${s.proj}</small></div><span class="badge">${s.capacidade} alunos</span>`;
-          li.onclick = () => { document.getElementById('nova').value = s.nome; };
-          ul.appendChild(li);
-        });
-      });
-    }
-  </script>
-</body>
-</html><script type="module">
-    const base = "https://gstatic.com";
-    const { initializeApp } = await import(base + "firebase-app.js");
-    const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import(base + "firebase-auth.js");
-    const { getDatabase, ref, set, get, onValue } = await import(base + "firebase-database.js");
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXGRZsJc4GM-zwjaImG1Gs0LV4JlLuz0c",
-      authDomain: "smartroom-remanejamento." + "firebaseapp.com",
-      databaseURL: "https://smartroom-remanejamento-default-rtdb." + "firebaseio.com",
-      projectId: "smartroom-remanejamento",
-      storageBucket: "smartroom-remanejamento." + "firebasestorage.app",
-      messagingSenderId: "465695973098",
-      appId: "1:465695973098:web:f60b648cba5761f542c193",
-      measurementId: "G-873M1VZ98X"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-
-    const loginBox = document.getElementById('login-box');
-    const userBar = document.getElementById('user-bar');
-    const formArea = document.getElementById('form-area');
-    const btnLogin = document.getElementById('btn-login');
-    const loginErro = document.getElementById('login-erro');
-
-    btnLogin.onclick = async () => {
-      const email = document.getElementById('login-email').value.trim();
-      const senha = document.getElementById('login-senha').value;
-      loginErro.style.display = 'none';
-
-      if (!email || !senha) {
-        loginErro.style.display = 'block';
-        loginErro.innerText = 'Digite o e-mail e a senha.';
-        return;
-      }
-
-      btnLogin.innerText = 'Entrando...';
-      btnLogin.disabled = true;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, senha);
-      } catch (e) {
-        loginErro.style.display = 'block';
-        loginErro.innerText = 'E-mail ou senha incorretos (ou usuário não cadastrado no Firebase).';
-      } finally {
-        btnLogin.innerText = 'Entrar no Painel';
-        btnLogin.disabled = false;
-      }
-    };
-
-    document.getElementById('btn-logout').onclick = () => signOut(auth);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        document.getElementById('user-email').innerText = 'Conectado: ' + user.email;
-        loginBox.classList.add('hidden');
-        userBar.classList.remove('hidden');
-        formArea.classList.remove('hidden');
-        carregarDados();
-        escutarSalas();
-      } else {
-        loginBox.classList.remove('hidden');
-        userBar.classList.add('hidden');
-        formArea.classList.add('hidden');
-      }
-    });
-
-    async function carregarDados() {
-      const d = new Date();
-      document.getElementById('hora').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-      const snap = await get(ref(db, 'remanejamento/atual'));
-      if (snap.exists()) {
-        const j = snap.val();
-        document.getElementById('sigla').value = j.sigla || '';
-        document.getElementById('disc').value = j.disciplina || '';
-        document.getElementById('prof').value = j.professor || '';
-        document.getElementById('ant').value = j.salaAnterior || '';
-        document.getElementById('nova').value = j.novaSala || '';
-        document.getElementById('motivo').value = j.motivo || '';
-        document.getElementById('mTit').value = j.mapaTitulo || '';
-        document.getElementById('mPassos').value = Array.isArray(j.mapaPassos) ? j.mapaPassos.join('\n') : (j.mapaPassos || '');
-      }
-    }
-
-    document.getElementById('btnSave').onclick = async () => {
-      const msg = document.getElementById('status');
-      try {
-        await set(ref(db, 'remanejamento/atual'), {
-          horario: document.getElementById('hora').value.trim(),
-          sigla: document.getElementById('sigla').value.trim(),
-          disciplina: document.getElementById('disc').value.trim(),
-          professor: document.getElementById('prof').value.trim(),
-          salaAnterior: document.getElementById('ant').value.trim(),
-          novaSala: document.getElementById('nova').value.trim(),
-          motivo: document.getElementById('motivo').value.trim(),
-          mapaTitulo: document.getElementById('mTit').value.trim(),
-          mapaPassos: document.getElementById('mPassos').value.split('\n').map(s => s.trim()).filter(Boolean)
-        });
-        msg.style.display = 'block'; msg.style.color = '#34d399';
-        msg.innerText = 'Alteração publicada com sucesso!';
-      } catch (e) {
-        msg.style.display = 'block'; msg.style.color = '#fca5a5';
-        msg.innerText = 'Sem permissão para salvar. Verifique seu e-mail nas regras do Firebase.';
-      }
-    };
-
-    document.getElementById('btnSaveSala').onclick = async () => {
-      const nome = document.getElementById('cad-nome').value.trim();
-      const cap = parseInt(document.getElementById('cad-cap').value, 10);
-      const msg = document.getElementById('status-sala');
-      if (!nome || isNaN(cap)) return alert("Preencha o nome e a capacidade da sala.");
-      const id = nome.toLowerCase().replace(/[^a-z0-9]/g, "_");
-      try {
-        await set(ref(db, 'catalogo_salas/' + id), {
-          nome, capacidade: cap,
-          ar: document.getElementById('cad-ar').value,
-          proj: document.getElementById('cad-proj').value
-        });
-        document.getElementById('cad-nome').value = '';
-        document.getElementById('cad-cap').value = '';
-        msg.style.display = 'block'; msg.style.color = '#34d399';
-        msg.innerText = 'Sala salva no catálogo!';
-      } catch (e) {
-        msg.style.display = 'block'; msg.style.color = '#fca5a5';
-        msg.innerText = 'Erro ao salvar sala.';
-      }
-    };
-
-    function escutarSalas() {
-      const ul = document.getElementById('lista-salas');
-      onValue(ref(db, 'catalogo_salas'), (snap) => {
-        ul.innerHTML = '';
-        const dados = snap.val();
-        if (!dados) return;
-        Object.values(dados).forEach(s => {
-          const li = document.createElement('li');
-          li.className = 'item';
-          li.innerHTML = `<div><strong>${s.nome}</strong><br><small style="color:#94a3b8">Ar: ${s.ar} • Proj: ${s.proj}</small></div><span class="badge">${s.capacidade} alunos</span>`;
-          li.onclick = () => { document.getElementById('nova').value = s.nome; };
-          ul.appendChild(li);
-        });
-      });
-    }
-  </script>
-</body>
-</html>
+document.getElementById('motivo').value = j.motivo || '';
+document.getElementById('mTit').value = j.mapaTitulo || '';
+document.getElementById('mPassos').value = Array.isArray(j.mapaPassos) ? j.mapaPassos.join('\n') : (j.mapaPassos || '');
+}
+}
+document.getElementById('btnSave').onclick = async () => {
+const msg = document.getElementById('status');
+try {
+await set(ref(db, 'remanejamento/atual'), {
+horario: document.getElementById('hora').value.trim(),
+sigla: document.getElementById('sigla').value.trim(),
+disciplina: document.getElementById('disc').value.trim(),
+professor: document.getElementById('prof').value.trim(),
+salaAnterior: document.getElementById('ant').value.trim(),
+novaSala: document.getElementById('nova').value.trim(),
+motivo: document.getElementById('motivo').value.trim(),
+mapaTitulo: document.getElementById('mTit').value.trim(),
+mapaPassos: document.getElementById('mPassos').value.split('\n').map(s => s.trim()).filter(Boolean)
+});
+msg.style.display = 'block'; msg.style.color = '#34d399';
+msg.innerText = 'Alteração publicada com sucesso!';
+} catch (e) {
+msg.style.display = 'block'; msg.style.color = '#fca5a5';
+msg.innerText = 'Sem permissão para salvar. Verifique seu e-mail nas regras do Firebase.';
+}
+};
+document.getElementById('btnSaveSala').onclick = async () => {
+const nome = document.getElementById('cad-nome').value.trim();
+const cap = parseInt(document.getElementById('cad-cap').value, 10);
+const msg = document.getElementById('status-sala');
+if (!nome || isNaN(cap)) return alert("Preencha o nome e a capacidade da sala.");
+const id = nome.toLowerCase().replace(/[^a-z0-9]/g, "_");
+try {
+await set(ref(db, 'catalogo_salas/' + id), {
+nome, capacidade: cap,
+ar: document.getElementById('cad-ar').value,
+proj: document.getElementById('cad-proj').value
+});
+document.getElementById('cad-nome').value = '';
+document.getElementById('cad-cap').value = '';
+msg.style.display = 'block'; msg.style.color = '#34d399';
+msg.innerText = 'Sala salva no catálogo!';
+} catch (e) {
+msg.style.display = 'block'; msg.style.color = '#fca5a5';
+msg.innerText = 'Erro ao salvar sala.';
+}
+};
+function escutarSalas() {
+const ul = document.getElementById('lista-salas');
+onValue(ref(db, 'catalogo_salas'), (snap) => {
+ul.innerHTML = '';
+const dados = snap.val();
+if (!dados) return;
+Object.values(dados).forEach(s => {
+const li = document.createElement('li');
+li.className = 'item';
+li.innerHTML = <div><strong>${s.nome}</strong><br><small style="color:#94a3b8">Ar: ${s.ar} • Proj: ${s.proj}</small></div><span class="badge">${s.capacidade} alunos</span>;
+li.onclick = () => { document.getElementById('nova').value = s.nome; };
+ul.appendChild(li);
+});
+});
+}
