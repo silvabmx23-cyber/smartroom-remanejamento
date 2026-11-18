@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -11,13 +11,13 @@
     .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #26323d; }
     .top h1 { font-size: 1.2rem; color: #34d399; }
     .top a { color: #94a3b8; text-decoration: none; font-size: .85rem; }
-    .auth-box { background: #172536; border: 1px solid #2b4566; padding: 12px; border-radius: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .auth-info { font-size: .82rem; color: #93c5fd; }
-    .btn-auth { background: #fff; color: #0f172a; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-    .btn-sair { background: #451a1a; color: #fca5a5; border: 1px solid #7f1d1d; }
+    .login-card { background: #0b1117; border: 1px solid #26323d; padding: 18px; border-radius: 14px; margin-bottom: 16px; }
+    .user-bar { background: #0d2e24; border: 1px solid #10b981; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; font-size: .85rem; color: #34d399; }
+    .btn-sair { background: #451a1a; color: #fca5a5; border: 1px solid #7f1d1d; padding: 6px 12px; border-radius: 7px; font-weight: 700; cursor: pointer; }
     .fg { margin-bottom: 12px; }
     label { display: block; font-size: .72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700; margin-bottom: 4px; }
-    input, textarea, select { width: 100%; background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 10px 12px; color: #fff; font-size: .92rem; }
+    input, textarea, select { width: 100%; background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 11px 12px; color: #fff; font-size: .94rem; }
+    .login-card input { background: #111921; }
     textarea { min-height: 70px; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
@@ -33,6 +33,7 @@
     .item { background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .item:hover { border-color: #34d399; }
     .badge { background: #0d2e24; color: #34d399; padding: 4px 8px; border-radius: 6px; font-size: .78rem; font-weight: 700; }
+    @media (max-width: 500px) { .row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -42,12 +43,21 @@
       <a href="./index.html" target="_blank">Ver Site Público ➔</a>
     </div>
 
-    <div class="auth-box">
-      <div class="auth-info" id="user-status">Faça login com Google para habilitar a edição.</div>
-      <button type="button" id="btn-login" class="btn-auth">Entrar com Google</button>
-      <button type="button" id="btn-logout" class="btn-auth btn-sair hidden">Sair</button>
+    <!-- Tela de Login E-mail e Senha -->
+    <div id="login-box" class="login-card">
+      <div class="fg"><label>E-mail do Apoio ou Professor</label><input type="email" id="login-email" placeholder="apoio@unifametro.edu.br"></div>
+      <div class="fg"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
+      <button type="button" id="btn-login" class="btn">Entrar no Painel</button>
+      <div id="login-erro" class="msg" style="color:#fca5a5;background:#451a1a;"></div>
     </div>
 
+    <!-- Barra de Usuário Conectado -->
+    <div id="user-bar" class="user-bar hidden">
+      <span id="user-email">Conectado</span>
+      <button type="button" id="btn-logout" class="btn-sair">Sair</button>
+    </div>
+
+    <!-- Formulário de Remanejamento e Catálogo -->
     <div id="form-area" class="hidden">
       <div class="row">
         <div class="fg"><label>Horário</label><input type="text" id="hora"></div>
@@ -88,137 +98,3 @@
       </div>
     </div>
   </div>
-  <script type="module">
-    const base = "https://gstatic.com";
-    const { initializeApp } = await import(base + "firebase-app.js");
-    const { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } = await import(base + "firebase-auth.js");
-    const { getDatabase, ref, set, get, onValue } = await import(base + "firebase-database.js");
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBXGRZsJc4GM-zwjaImG1Gs0LV4JlLuz0c",
-      authDomain: "smartroom-remanejamento." + "firebaseapp.com",
-      databaseURL: "https://smartroom-remanejamento-default-rtdb." + "firebaseio.com",
-      projectId: "smartroom-remanejamento",
-      storageBucket: "smartroom-remanejamento." + "firebasestorage.app",
-      messagingSenderId: "465695973098",
-      appId: "1:465695973098:web:f60b648cba5761f542c193",
-      measurementId: "G-873M1VZ98X"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-    const provider = new GoogleAuthProvider();
-
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    const formArea = document.getElementById('form-area');
-    const userStatus = document.getElementById('user-status');
-
-    getRedirectResult(auth).catch(e => { userStatus.innerText = "Erro: " + e.message; });
-
-    btnLogin.onclick = () => {
-      btnLogin.innerText = "Abrindo Google...";
-      btnLogin.disabled = true;
-      signInWithRedirect(auth, provider);
-    };
-
-    btnLogout.onclick = () => signOut(auth);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        userStatus.innerText = "Conectado: " + user.email;
-        btnLogin.classList.add('hidden');
-        btnLogout.classList.remove('hidden');
-        formArea.classList.remove('hidden');
-        carregarDados();
-        escutarSalas();
-      } else {
-        userStatus.innerText = "Faça login com Google para habilitar a edição.";
-        btnLogin.innerText = "Entrar com Google";
-        btnLogin.disabled = false;
-        btnLogin.classList.remove('hidden');
-        btnLogout.classList.add('hidden');
-        formArea.classList.add('hidden');
-      }
-    });
-
-    async function carregarDados() {
-      const d = new Date();
-      document.getElementById('hora').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-      const snap = await get(ref(db, 'remanejamento/atual'));
-      if (snap.exists()) {
-        const j = snap.val();
-        document.getElementById('sigla').value = j.sigla || '';
-        document.getElementById('disc').value = j.disciplina || '';
-        document.getElementById('prof').value = j.professor || '';
-        document.getElementById('ant').value = j.salaAnterior || '';
-        document.getElementById('nova').value = j.novaSala || '';
-        document.getElementById('motivo').value = j.motivo || '';
-        document.getElementById('mTit').value = j.mapaTitulo || '';
-        document.getElementById('mPassos').value = Array.isArray(j.mapaPassos) ? j.mapaPassos.join('\n') : (j.mapaPassos || '');
-      }
-    }
-
-    document.getElementById('btnSave').onclick = async () => {
-      const msg = document.getElementById('status');
-      try {
-        await set(ref(db, 'remanejamento/atual'), {
-          horario: document.getElementById('hora').value.trim(),
-          sigla: document.getElementById('sigla').value.trim(),
-          disciplina: document.getElementById('disc').value.trim(),
-          professor: document.getElementById('prof').value.trim(),
-          salaAnterior: document.getElementById('ant').value.trim(),
-          novaSala: document.getElementById('nova').value.trim(),
-          motivo: document.getElementById('motivo').value.trim(),
-          mapaTitulo: document.getElementById('mTit').value.trim(),
-          mapaPassos: document.getElementById('mPassos').value.split('\n').map(s => s.trim()).filter(Boolean)
-        });
-        msg.style.display = 'block'; msg.style.color = '#34d399';
-        msg.innerText = 'Alteração publicada com sucesso!';
-      } catch (e) {
-        msg.style.display = 'block'; msg.style.color = '#fca5a5';
-        msg.innerText = 'Sem permissão para salvar. Verifique seu e-mail nas regras do Firebase.';
-      }
-    };
-
-    document.getElementById('btnSaveSala').onclick = async () => {
-      const nome = document.getElementById('cad-nome').value.trim();
-      const cap = parseInt(document.getElementById('cad-cap').value, 10);
-      const msg = document.getElementById('status-sala');
-      if (!nome || isNaN(cap)) return alert("Preencha o nome e a capacidade da sala.");
-      const id = nome.toLowerCase().replace(/[^a-z0-9]/g, "_");
-      try {
-        await set(ref(db, 'catalogo_salas/' + id), {
-          nome, capacidade: cap,
-          ar: document.getElementById('cad-ar').value,
-          proj: document.getElementById('cad-proj').value
-        });
-        document.getElementById('cad-nome').value = '';
-        document.getElementById('cad-cap').value = '';
-        msg.style.display = 'block'; msg.style.color = '#34d399';
-        msg.innerText = 'Sala salva no catálogo!';
-      } catch (e) {
-        msg.style.display = 'block'; msg.style.color = '#fca5a5';
-        msg.innerText = 'Erro ao salvar sala.';
-      }
-    };
-
-    function escutarSalas() {
-      const ul = document.getElementById('lista-salas');
-      onValue(ref(db, 'catalogo_salas'), (snap) => {
-        ul.innerHTML = '';
-        const dados = snap.val();
-        if (!dados) return;
-        Object.values(dados).forEach(s => {
-          const li = document.createElement('li');
-          li.className = 'item';
-          li.innerHTML = `<div><strong>${s.nome}</strong><br><small style="color:#94a3b8">Ar: ${s.ar} • Proj: ${s.proj}</small></div><span class="badge">${s.capacidade} alunos</span>`;
-          li.onclick = () => { document.getElementById('nova').value = s.nome; };
-          ul.appendChild(li);
-        });
-      });
-    }
-  </script>
-</body>
-</html>
