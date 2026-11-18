@@ -34,8 +34,6 @@
     .btn-sec:hover { background: rgba(255,255,255,.15); }
     .msg { margin-top: 14px; padding: 12px; border-radius: 10px; text-align: center; font-size: .88rem; font-weight: 600; display: none; }
     .hidden { display: none !important; }
-    
-    /* Estilos do Catálogo de Salas */
     .secao-salas { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--bdr); }
     .secao-salas h2 { font-size: 1.05rem; font-weight: 800; color: var(--e4); margin-bottom: 4px; }
     .secao-salas p { font-size: .8rem; color: var(--sec); margin-bottom: 14px; }
@@ -45,7 +43,6 @@
     .item-sala-info strong { font-size: .9rem; color: #fff; display: block; }
     .item-sala-info small { font-size: .76rem; color: var(--sec); }
     .badge-cap { background: rgba(16,185,129,.15); color: var(--e4); border: 1px solid rgba(16,185,129,.3); padding: 4px 9px; border-radius: 8px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
-    
     @media (max-width: 500px) { .row { grid-template-columns: 1fr; } .auth-box { flex-direction: column; text-align: center; } }
   </style>
 </head>
@@ -56,14 +53,12 @@
       <a href="./index.html" target="_blank">Ver Site Público ➔</a>
     </div>
 
-    <!-- Barra de Login Google -->
     <div class="auth-box">
       <div class="auth-info" id="user-status">Faça login com Google para habilitar a edição pelo celular.</div>
       <button type="button" id="btn-login" class="btn-auth">Entrar com Google</button>
       <button type="button" id="btn-logout" class="btn-auth btn-sair hidden">Sair</button>
     </div>
 
-    <!-- Formulário do Apoio -->
     <div id="form-area" class="hidden">
       <div class="row">
         <div class="fg"><label>Horário da Atualização</label><input type="text" id="hora"></div>
@@ -90,7 +85,6 @@
       <button type="button" id="btnSave" class="btn">Publicar Alteração Agora</button>
       <div id="status" class="msg"></div>
 
-      <!-- Nova Seção: Catálogo de Salas e Capacidade -->
       <div class="secao-salas">
         <h2>Catálogo de Salas e Capacidade</h2>
         <p>Cadastre a capacidade máxima e estrutura das salas. Clique em uma sala listada para selecioná-la como Nova Sala.</p>
@@ -159,152 +153,6 @@
 
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
-      const formArea = document.getElementById('form-area');
-const userStatus = document.getElementById('user-status');
-const btnSave = document.getElementById('btnSave');
-const statusMsg = document.getElementById('status');
-getRedirectResult(auth).catch(e => {
-userStatus.innerText = "Erro ao concluir login: " + e.message;
-});
-btnLogin.onclick = () => {
-btnLogin.innerText = "Abrindo Google...";
-btnLogin.disabled = true;
-signInWithRedirect(auth, provider).catch(e => {
-btnLogin.innerText = "Entrar com Google";
-btnLogin.disabled = false;
-alert("Erro ao iniciar login: " + e.message);
-});
-};
-btnLogout.onclick = () => signOut(auth);
-onAuthStateChanged(auth, async (user) => {
-if (user) {
-userStatus.innerText = Conectado como: ${user.email};
-btnLogin.classList.add('hidden');
-btnLogout.classList.remove('hidden');
-formArea.classList.remove('hidden');
-await carregarDados();
-escutarCatalogoSalas();
-} else {
-userStatus.innerText = 'Faça login com Google para habilitar a edição pelo celular.';
-btnLogin.innerText = "Entrar com Google";
-btnLogin.disabled = false;
-btnLogin.classList.remove('hidden');
-btnLogout.classList.add('hidden');
-formArea.classList.add('hidden');
-}
-});
-async function carregarDados() {
-const d = new Date();
-document.getElementById('hora').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-try {
-const snap = await get(ref(db, 'remanejamento/atual'));
-let j = snap.exists() ? snap.val() : null;
-if (!j) {
-const r = await fetch('./dados.json');
-j = await r.json();
-}
-if (j) {
-document.getElementById('sigla').value = j.sigla || '';
-document.getElementById('disc').value = j.disciplina || '';
-document.getElementById('prof').value = j.professor || '';
-document.getElementById('ant').value = j.salaAnterior || '';
-document.getElementById('nova').value = j.novaSala || '';
-document.getElementById('motivo').value = j.motivo || '';
-document.getElementById('mTit').value = j.mapaTitulo || '';
-document.getElementById('mPassos').value = Array.isArray(j.mapaPassos) ? j.mapaPassos.join('\n') : (j.mapaPassos || '');
-}
-} catch (e) {
-console.error("Erro ao carregar dados:", e);
-}
-}
-btnSave.onclick = async () => {
-btnSave.disabled = true;
-btnSave.innerText = 'Publicando...';
-statusMsg.style.display = 'none';
-const payload = {
-horario: document.getElementById('hora').value.trim(),
-sigla: document.getElementById('sigla').value.trim(),
-disciplina: document.getElementById('disc').value.trim(),
-professor: document.getElementById('prof').value.trim(),
-salaAnterior: document.getElementById('ant').value.trim(),
-novaSala: document.getElementById('nova').value.trim(),
-motivo: document.getElementById('motivo').value.trim(),
-mapaTitulo: document.getElementById('mTit').value.trim(),
-mapaPassos: document.getElementById('mPassos').value.split('\n').map(s => s.trim()).filter(Boolean)
-};
-try {
-await set(ref(db, 'remanejamento/atual'), payload);
-statusMsg.style.display = 'block';
-statusMsg.style.background = 'rgba(16,185,129,.2)';
-statusMsg.style.color = '#34d399';
-statusMsg.innerText = 'Alteração publicada com sucesso!';
-} catch (e) {
-statusMsg.style.display = 'block';
-statusMsg.style.background = 'rgba(239,68,68,.2)';
-statusMsg.style.color = '#fca5a5';
-statusMsg.innerText = 'Erro ao salvar: verifique se seu e-mail tem permissão nas regras do Firebase.';
-} finally {
-btnSave.disabled = false;
-btnSave.innerText = 'Publicar Alteração Agora';
-}
-};
-const btnSaveSala = document.getElementById('btnSaveSala');
-const statusSala = document.getElementById('status-sala');
-btnSaveSala.onclick = async () => {
-const nome = document.getElementById('cad-nome-sala').value.trim();
-const capacidade = parseInt(document.getElementById('cad-cap-sala').value, 10);
-const ar = document.getElementById('cad-ar-sala').value;
-const proj = document.getElementById('cad-proj-sala').value;
-if (!nome || isNaN(capacidade)) {
-alert("Preencha o nome da sala e a capacidade máxima de alunos.");
-return;
-}
-btnSaveSala.disabled = true;
-btnSaveSala.innerText = 'Salvando sala...';
-statusSala.style.display = 'none';
-const salaId = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "_");
-try {
-await set(ref(db, catalogo_salas/${salaId}), {
-nome,
-capacidade,
-ar,
-proj
-});
-document.getElementById('cad-nome-sala').value = '';
-document.getElementById('cad-cap-sala').value = '';
-statusSala.style.display = 'block';
-statusSala.style.background = 'rgba(16,185,129,.2)';
-statusSala.style.color = '#34d399';
-statusSala.innerText = Sala "${nome}" salva no catálogo!;
-} catch (e) {
-statusSala.style.display = 'block';
-statusSala.style.background = 'rgba(239,68,68,.2)';
-statusSala.style.color = '#fca5a5';
-statusSala.innerText = 'Erro ao salvar sala: verifique as permissões do Firebase.';
-} finally {
-btnSaveSala.disabled = false;
-btnSaveSala.innerText = 'Salvar Sala no Catálogo';
-}
-};
-function escutarCatalogoSalas() {
-const ul = document.getElementById('lista-catalogo-salas');
-onValue(ref(db, 'catalogo_salas'), (snap) => {
-ul.innerHTML = '';
-const dados = snap.val();
-if (!dados) {
-ul.innerHTML = 'Nenhuma sala cadastrada ainda.';
-return;
-}
-Object.values(dados).sort((a, b) => a.nome.localeCompare(b.nome)).forEach((sala) => {
-const li = document.createElement('li');
-li.className = 'item-sala';
-li.title = 'Clique para usar esta sala no remanejamento';
-li.innerHTML = <div class="item-sala-info"> <strong>${sala.nome}</strong> <small>Ar-condicionado: ${sala.ar} • Projetor: ${sala.proj}</small> </div> <span class="badge-cap">${sala.capacidade} alunos</span>;
-li.onclick = () => {
-document.getElementById('nova').value = sala.nome;
-document.getElementById('nova').scrollIntoView({ behavior: 'smooth', block: 'center' });
-};
-ul.appendChild(li);
-});
-});
-}
+    const formArea = document.getElementById('form-area');
+    const userStatus = document.getElementById('user-status');
+    const btnSave = document.getElementById('btnSave');
