@@ -89,16 +89,17 @@
     </div>
   </div>
   <script type="module">
-    import { initializeApp } from "https://gstatic.com";
-    import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://gstatic.com";
-    import { getDatabase, ref, set, get, onValue } from "https://gstatic.com";
+    const base = "https://gstatic.com";
+    const { initializeApp } = await import(base + "firebase-app.js");
+    const { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } = await import(base + "firebase-auth.js");
+    const { getDatabase, ref, set, get, onValue } = await import(base + "firebase-database.js");
 
     const firebaseConfig = {
       apiKey: "AIzaSyBXGRZsJc4GM-zwjaImG1Gs0LV4JlLuz0c",
-      authDomain: "://firebaseapp.com",
-      databaseURL: "https://firebaseio.com",
+      authDomain: "smartroom-remanejamento." + "firebaseapp.com",
+      databaseURL: "https://smartroom-remanejamento-default-rtdb." + "firebaseio.com",
       projectId: "smartroom-remanejamento",
-      storageBucket: "smartroom-remanejamento.firebasestorage.app",
+      storageBucket: "smartroom-remanejamento." + "firebasestorage.app",
       messagingSenderId: "465695973098",
       appId: "1:465695973098:web:f60b648cba5761f542c193",
       measurementId: "G-873M1VZ98X"
