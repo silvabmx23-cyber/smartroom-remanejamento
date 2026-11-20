@@ -1,115 +1,181 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SmartRoom — Painel de Apoio</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-    body { background: #070b0e; color: #f8fafc; display: flex; justify-content: center; padding: 20px 14px; }
-    .box { background: #111921; border: 1px solid #26323d; border-radius: 18px; width: 100%; max-width: 580px; padding: 22px; }
+    body { background: #0f0b0e; color: #f8fafc; display: flex; justify-content: center; padding: 20px 14px; }
+    .box { background: #111827; border: 1px solid #26323d; border-radius: 18px; width: 100%; max-width: 580px; padding: 22px; }
     .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #26323d; }
     .top h1 { font-size: 1.2rem; color: #34d399; }
     .top a { color: #94a3b8; text-decoration: none; font-size: .85rem; }
     .login-card { background: #0b1117; border: 1px solid #26323d; padding: 18px; border-radius: 14px; margin-bottom: 16px; }
-    .user-bar { background: #0d2e24; border: 1px solid #10b981; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; font-size: .85rem; color: #34d399; }
-    .btn-sair { background: #451a1a; color: #fca5a5; border: 1px solid #7f1d1d; padding: 6px 12px; border-radius: 7px; font-weight: 700; cursor: pointer; }
+    .user-bar { background: #0d2e24; border: 1px solid #10b981; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; font-size: .85rem; }
+    .btn-sair { background: #451a1a; color: #fca5a5; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 7px; font-weight: 600; cursor: pointer; }
     .fg { margin-bottom: 12px; }
     label { display: block; font-size: .72rem; text-transform: uppercase; color: #94a3b8; font-weight: 700; margin-bottom: 4px; }
-    input, textarea, select { width: 100%; background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 11px 12px; color: #fff; font-size: .94rem; }
-    .login-card input { background: #111921; }
-    textarea { min-height: 70px; }
+    input, textarea, select { width: 100%; background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 11px 12px; color: #f8fafc; font-size: .92rem; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #34d399; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-    .chip { background: #0d2e24; border: 1px solid #10b981; color: #34d399; padding: 5px 10px; border-radius: 16px; font-size: .75rem; cursor: pointer; }
-    .btn { width: 100%; background: #059669; color: #fff; border: 1px solid #34d399; padding: 13px; border-radius: 11px; font-size: .98rem; font-weight: 700; cursor: pointer; margin-top: 6px; }
+    .btn { width: 100%; background: #059669; color: #fff; border: 1px solid #34d399; padding: 13px; border-radius: 11px; font-size: .95rem; font-weight: 700; cursor: pointer; margin-top: 4px; }
+    .btn:hover { background: #047857; }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-sec { background: #1e293b; border-color: #475569; }
+    .btn-sec { background: #1e293b; border-color: #475569; margin-top: 8px; }
+    .btn-del { background: #451a1a; color: #fca5a5; border: 1px solid #ef4444; padding: 4px 8px; border-radius: 6px; font-size: .75rem; cursor: pointer; }
     .msg { margin-top: 12px; padding: 10px; border-radius: 8px; text-align: center; font-size: .86rem; font-weight: 600; display: none; }
+    .msg.ok { display: block; background: #064e3b; color: #6ee7b7; border: 1px solid #10b981; }
+    .msg.err { display: block; background: #450a0a; color: #fca5a5; border: 1px solid #ef4444; }
     .hidden { display: none !important; }
     .secao { margin-top: 24px; padding-top: 20px; border-top: 1px solid #26323d; }
     .secao h2 { font-size: 1.05rem; color: #34d399; margin-bottom: 4px; }
     .secao p { font-size: .8rem; color: #94a3b8; margin-bottom: 12px; }
     .lista { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-    .item { background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .item { background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; font-size: .88rem; }
     .item:hover { border-color: #34d399; }
-    .badge { background: #0d2e24; color: #34d399; padding: 4px 8px; border-radius: 6px; font-size: .78rem; font-weight: 700; }
-    @media (max-width: 500px) { .row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <div class="box">
     <div class="top">
-      <h1>SmartRoom Apoio</h1>
-      <a href="./index.html" target="_blank">Ver Site Público ➔</a>
+      <h1>SmartRoom — Painel de Apoio</h1>
+      <a href="/">← Ver Tela Alunos</a>
     </div>
 
     <div id="login-box" class="login-card">
-      <div class="fg"><label>E-mail do Apoio ou Professor</label><input type="email" id="login-email" placeholder="apoio@unifametro.edu.br"></div>
-      <div class="fg"><label>Senha</label><input type="password" id="login-senha" placeholder="••••••••"></div>
+      <div class="fg">
+        <label for="login-email">E-mail Institucional (Apoio / Professor)</label>
+        <input type="email" id="login-email" placeholder="apoio@unifametro.edu.br" required />
+      </div>
+      <div class="fg">
+        <label for="login-senha">Senha</label>
+        <input type="password" id="login-senha" placeholder="••••••••" required />
+      </div>
       <button type="button" id="btn-login" class="btn">Entrar no Painel</button>
-      <div id="login-erro" class="msg" style="color:#fca5a5;background:#451a1a;"></div>
-    </div>
-
-    <div id="user-bar" class="user-bar hidden">
-      <span id="user-email">Conectado</span>
-      <button type="button" id="btn-logout" class="btn-sair">Sair</button>
+      <div id="login-erro" class="msg"></div>
     </div>
 
     <div id="form-area" class="hidden">
-      <div class="row">
-        <div class="fg"><label>Horário</label><input type="text" id="hora" placeholder="Ex: 19:00 - 21:40"></div>
-        <div class="fg"><label>Sigla</label><input type="text" id="sigla" placeholder="Ex: ADS01"></div>
+      <div class="user-bar">
+        <span>Logado como: <strong id="user-email"></strong></span>
+        <button type="button" id="btn-logout" class="btn-sair">Sair</button>
       </div>
-      <div class="fg"><label>Disciplina</label><input type="text" id="disc" placeholder="Nome da disciplina"></div>
-      <div class="fg"><label>Professor(a)</label><input type="text" id="prof" placeholder="Nome do professor"></div>
+
+      <h2 style="font-size: 1.05rem; color: #34d399; margin-bottom: 12px;">Publicar Remanejamento de Sala</h2>
+
       <div class="row">
-        <div class="fg"><label>Sala Anterior</label><input type="text" id="ant" placeholder="Ex: Sala 101"></div>
-        <div class="fg"><label>Nova Sala (ou clique abaixo)</label><input type="text" id="nova" placeholder="Ex: Sala 204"></div>
-      </div>
-      <div class="fg">
-        <label>Motivo Rápido</label>
-        <div class="chips">
-          <button type="button" class="chip" onclick="document.getElementById('motivo').value='O ar-condicionado apresentou defeito.'">Ar-condicionado</button>
-          <button type="button" class="chip" onclick="document.getElementById('motivo').value='A sala original não comporta a quantidade de alunos.'">Lotação / Capacidade</button>
-          <button type="button" class="chip" onclick="document.getElementById('motivo').value='O projetor apresentou falha técnica.'">Projetor com defeito</button>
+        <div class="fg">
+          <label for="hora">Horário</label>
+          <input type="text" id="hora" placeholder="Ex: 19:00 - 21:40" />
         </div>
-        <textarea id="motivo" placeholder="Descreva o motivo do remanejamento"></textarea>
+        <div class="fg">
+          <label for="sigla">Sigla / Turma</label>
+          <input type="text" id="sigla" placeholder="Ex: ADS-4N" />
+        </div>
       </div>
-      <div class="fg"><label>Título do Mapa</label><input type="text" id="mTit" placeholder="Ex: Como chegar na Sala 204"></div>
-      <div class="fg"><label>Como Chegar (1 passo por linha)</label><textarea id="mPassos" placeholder="Suba as escadas do Bloco B&#10;Vire à esquerda no corredor"></textarea></div>
+
+      <div class="row">
+        <div class="fg">
+          <label for="disc">Disciplina</label>
+          <input type="text" id="disc" placeholder="Ex: Engenharia de Software" />
+        </div>
+        <div class="fg">
+          <label for="prof">Professor(a)</label>
+          <input type="text" id="prof" placeholder="Nome do docente" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="fg">
+          <label for="ant">Sala Anterior</label>
+          <input type="text" id="ant" placeholder="Ex: Bloco B - Sala 204" />
+        </div>
+        <div class="fg">
+          <label for="nova">Nova Sala</label>
+          <select id="nova">
+            <option value="">Selecione uma sala do catálogo...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label for="motivo">Motivo da Alteração</label>
+        <select id="motivo">
+          <option value="Ar-condicionado com defeito">Ar-condicionado com defeito</option>
+          <option value="Projetor / Equipamento indisponível">Projetor / Equipamento indisponível</option>
+          <option value="Lotação máxima / Capacidade da sala">Lotação máxima / Capacidade da sala</option>
+          <option value="Sala reservada para evento">Sala reservada para evento</option>
+          <option value="Manutenção elétrica / estrutural">Manutenção elétrica / estrutural</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="fg">
+          <label for="mTit">Título do Aviso (Opcional)</label>
+          <input type="text" id="mTit" placeholder="Ex: Atenção Turma!" />
+        </div>
+        <div class="fg">
+          <label for="mPassos">Instrução Extra (Opcional)</label>
+          <input type="text" id="mPassos" placeholder="Ex: Subir pelo elevador B" />
+        </div>
+      </div>
+
       <button type="button" id="btnSave" class="btn">Publicar Alteração Agora</button>
-      <div id="status" class="msg"></div>
+      <div id="statusMsg" class="msg"></div>
 
       <div class="secao">
-        <h2>Catálogo de Salas e Capacidade</h2>
-        <p>Cadastre a capacidade e recursos. Clique em uma sala abaixo para preencher a Nova Sala.</p>
-        <div class="fg"><label>Nome da Sala</label><input type="text" id="cad-nome" placeholder="Ex: Sala 102 - Bloco B"></div>
+        <h2>Catálogo de Salas Disponíveis</h2>
+        <p>Cadastre as salas da instituição para aparecerem na lista de destino acima.</p>
+
         <div class="row">
-          <div class="fg"><label>Capacidade (Alunos)</label><input type="number" id="cad-cap" placeholder="Ex: 55"></div>
-          <div class="fg"><label>Ar-condicionado</label><select id="cad-ar"><option value="OK">OK</option><option value="Defeito">Defeito</option></select></div>
+          <div class="fg">
+            <label for="cad-nome">Nome / Número da Sala</label>
+            <input type="text" id="cad-nome" placeholder="Ex: Lab 03 - Bloco A" />
+          </div>
+          <div class="fg">
+            <label for="cad-cap">Capacidade (Alunos)</label>
+            <input type="number" id="cad-cap" placeholder="Ex: 45" />
+          </div>
         </div>
-        <div class="fg"><label>Projetor</label><select id="cad-proj"><option value="OK">OK</option><option value="Defeito">Defeito</option></select></div>
-        <button type="button" id="btnSaveSala" class="btn btn-sec">Salvar Sala no Catálogo</button>
+
+        <div class="row">
+          <div class="fg">
+            <label for="cad-ar">Ar-Condicionado</label>
+            <select id="cad-ar">
+              <option value="OK">Funcionando (OK)</option>
+              <option value="Defeito">Em Manutenção</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label for="cad-proj">Projetor / TV</label>
+            <select id="cad-proj">
+              <option value="OK">Funcionando (OK)</option>
+              <option value="Sem Projetor">Sem Projetor</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" id="btnSaveSala" class="btn btn-sec">+ Adicionar Sala ao Catálogo</button>
         <div id="status-sala" class="msg"></div>
+
         <ul id="lista-salas" class="lista"></ul>
       </div>
     </div>
   </div>
-
-  <script type="module">
+    <script type="module">
     import { initializeApp } from "https://gstatic.com";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://gstatic.com";
-    import { getDatabase, ref, push, set, onValue } from "https://gstatic.com";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://gstatic.com";
+    import { getDatabase, ref, push, onValue, remove } from "https://gstatic.com";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyBXGRZsJc4GM-zwjaImG1Gs0LV4JlLuz0c",
+      apiKey: "AIzaSyBXGRZsJc4GM-zwjmImG1Ge0lV4J1Luz0c",
       authDomain: "://firebaseapp.com",
       databaseURL: "https://firebaseio.com",
       projectId: "smartroom-remanejamento",
       storageBucket: "smartroom-remanejamento.firebasestorage.app",
-      messagingSenderId: "465695973098",
-      appId: "1:465695973098:web:f60b648cba5761f542c193",
+      messagingSenderId: "465695973898",
+      appId: "1:465695973898:web:f60b648cbe5761f542c193",
       measurementId: "G-873M1VZ98X"
     };
 
@@ -118,136 +184,158 @@
     const db = getDatabase(app);
 
     const loginBox = document.getElementById('login-box');
-    const userBar = document.getElementById('user-bar');
-    const userEmailSpan = document.getElementById('user-email');
     const formArea = document.getElementById('form-area');
+    const userEmailSpan = document.getElementById('user-email');
     const btnLogin = document.getElementById('btn-login');
     const btnLogout = document.getElementById('btn-logout');
     const loginErro = document.getElementById('login-erro');
+    const btnSave = document.getElementById('btnSave');
+    const statusMsg = document.getElementById('statusMsg');
+    const btnSaveSala = document.getElementById('btnSaveSala');
+    const statusSala = document.getElementById('status-sala');
+    const listaSalas = document.getElementById('lista-salas');
+    const selectNovaSala = document.getElementById('nova');
 
     function mostrarMensagem(el, texto, sucesso = true) {
       el.textContent = texto;
-      el.style.display = 'block';
-      el.style.color = sucesso ? '#34d399' : '#fca5a5';
-      el.style.background = sucesso ? '#0d2e24' : '#451a1a';
+      el.className = 'msg ' + (sucesso ? 'ok' : 'err');
     }
 
-    // Monitora estado de login
     onAuthStateChanged(auth, (user) => {
       if (user) {
         loginBox.classList.add('hidden');
-        userBar.classList.remove('hidden');
         formArea.classList.remove('hidden');
-        userEmailSpan.textContent = `Conectado: ${user.email}`;
+        userEmailSpan.textContent = user.email;
+        carregarCatalogoSalas();
       } else {
         loginBox.classList.remove('hidden');
-        userBar.classList.add('hidden');
         formArea.classList.add('hidden');
+        userEmailSpan.textContent = '';
       }
     });
 
-    // Evento de Login
-    btnLogin.onclick = async () => {
+    btnLogin.onclick = async (e) => {
+      e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
       const senha = document.getElementById('login-senha').value;
-      loginErro.style.display = 'none';
 
       if (!email || !senha) {
-        mostrarMensagem(loginErro, 'Preencha o e-mail e a senha.', false);
+        mostrarMensagem(loginErro, 'Preencha e-mail e senha.', false);
         return;
       }
 
       btnLogin.disabled = true;
       btnLogin.textContent = 'Entrando...';
+      loginErro.className = 'msg';
 
       try {
-        await signInWithEmailAndPassword(auth, email, senha);
+        const cred = await signInWithEmailAndPassword(auth, email, senha);
+        if (!cred.user.emailVerified) {
+          await sendEmailVerification(cred.user);
+          alert('Link de verificação enviado para ' + cred.user.email + '. Confirme na sua caixa de entrada.');
+        }
       } catch (err) {
-        mostrarMensagem(loginErro, 'E-mail ou senha inválidos, ou usuário não cadastrado.', false);
+        let msg = 'Erro ao entrar. Verifique e-mail e senha.';
+        if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+          msg = 'E-mail ou senha incorretos.';
+        } else if (err.code === 'auth/too-many-requests') {
+          msg = 'Muitas tentativas. Aguarde alguns minutos.';
+        }
+        mostrarMensagem(loginErro, msg, false);
       } finally {
         btnLogin.disabled = false;
         btnLogin.textContent = 'Entrar no Painel';
       }
     };
-// Permitir apertar Enter no campo de senha
-document.getElementById('login-senha').addEventListener('keypress', (e) => {
-if (e.key === 'Enter') btnLogin.click();
-});
-// Evento de Logout
-btnLogout.onclick = () => signOut(auth);
-// Publicar Remanejamento
-const btnSave = document.getElementById('btnSave');
-const statusMsg = document.getElementById('status');
-btnSave.onclick = async () => {
-const dados = {
-hora: document.getElementById('hora').value.trim(),
-sigla: document.getElementById('sigla').value.trim(),
-disc: document.getElementById('disc').value.trim(),
-prof: document.getElementById('prof').value.trim(),
-ant: document.getElementById('ant').value.trim(),
-nova: document.getElementById('nova').value.trim(),
-motivo: document.getElementById('motivo').value.trim(),
-mTit: document.getElementById('mTit').value.trim(),
-mPassos: document.getElementById('mPassos').value.trim().split('\n').filter(p => p.trim() !== ''),
-criadoEm: Date.now()
-};
-if (!dados.disc || !dados.nova) {
-mostrarMensagem(statusMsg, 'Preencha pelo menos a Disciplina e a Nova Sala.', false);
-return;
-}
-btnSave.disabled = true;
-btnSave.textContent = 'Publicando...';
-try {
-await push(ref(db, 'remanejamentos'), dados);
-mostrarMensagem(statusMsg, 'Alteração publicada com sucesso!', true);
-['hora', 'sigla', 'disc', 'prof', 'ant', 'nova', 'motivo', 'mTit', 'mPassos'].forEach(id => {
-document.getElementById(id).value = '';
-});
-} catch (err) {
-mostrarMensagem(statusMsg, 'Erro ao salvar no banco de dados.', false);
-} finally {
-btnSave.disabled = false;
-btnSave.textContent = 'Publicar Alteração Agora';
-}
-};
-// Salvar Sala no Catálogo
-const btnSaveSala = document.getElementById('btnSaveSala');
-const statusSala = document.getElementById('status-sala');
-btnSaveSala.onclick = async () => {
-const nome = document.getElementById('cad-nome').value.trim();
-const cap = document.getElementById('cad-cap').value.trim();
-const ar = document.getElementById('cad-ar').value;
-const proj = document.getElementById('cad-proj').value;
-if (!nome) {
-mostrarMensagem(statusSala, 'Informe o nome da sala.', false);
-return;
-}
-btnSaveSala.disabled = true;
-try {
-await push(ref(db, 'salas'), { nome, cap, ar, proj });
-mostrarMensagem(statusSala, 'Sala salva no catálogo!', true);
-document.getElementById('cad-nome').value = '';
-document.getElementById('cad-cap').value = '';
-} catch (err) {
-mostrarMensagem(statusSala, 'Erro ao salvar sala.', false);
-} finally {
-btnSaveSala.disabled = false;
-}
-};
-// Listar Salas do Catálogo
-const listaSalas = document.getElementById('lista-salas');
-onValue(ref(db, 'salas'), (snapshot) => {
-listaSalas.innerHTML = '';
-const data = snapshot.val();
-if (!data) return;
-Object.values(data).forEach((sala) => {
-const li = document.createElement('li');
-li.className = 'item';
-li.innerHTML = <div> <strong>${sala.nome}</strong><br> <small style="color:#94a3b8;">Ar: ${sala.ar} | Projetor: ${sala.proj}</small> </div> <span class="badge">${sala.cap ? sala.cap + ' lug.' : 'Sala'}</span>;
-li.onclick = () => {
-document.getElementById('nova').value = sala.nome;
-window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-listaSalas.appendChild(li);
-});
-});
+
+    btnLogout.onclick = () => signOut(auth);
+
+    btnSave.onclick = async () => {
+      const dados = {
+        hora: document.getElementById('hora').value.trim(),
+        sigla: document.getElementById('sigla').value.trim(),
+        disc: document.getElementById('disc').value.trim(),
+        prof: document.getElementById('prof').value.trim(),
+        ant: document.getElementById('ant').value.trim(),
+        nova: document.getElementById('nova').value,
+        motivo: document.getElementById('motivo').value,
+        mTit: document.getElementById('mTit').value.trim(),
+        mPassos: document.getElementById('mPassos').value.trim(),
+        criadoEm: Date.now()
+      };
+
+      if (!dados.disc || !dados.ant || !dados.nova) {
+        mostrarMensagem(statusMsg, 'Preencha disciplina, sala anterior e nova sala.', false);
+        return;
+      }
+
+      btnSave.disabled = true;
+      btnSave.textContent = 'Publicando...';
+
+      try {
+        await push(ref(db, 'remanejamentos'), dados);
+        mostrarMensagem(statusMsg, 'Alteração publicada com sucesso!', true);
+        ['hora', 'sigla', 'disc', 'prof', 'ant', 'mTit', 'mPassos'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('nova').value = '';
+      } catch (err) {
+        mostrarMensagem(statusMsg, 'Erro ao salvar no banco de dados.', false);
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = 'Publicar Alteração Agora';
+      }
+    };
+
+    btnSaveSala.onclick = async () => {
+      const nome = document.getElementById('cad-nome').value.trim();
+      const cap = document.getElementById('cad-cap').value.trim();
+      const ar = document.getElementById('cad-ar').value;
+      const proj = document.getElementById('cad-proj').value;
+
+      if (!nome) {
+        mostrarMensagem(statusSala, 'Informe o nome da sala.', false);
+        return;
+      }
+
+      btnSaveSala.disabled = true;
+      try {
+        await push(ref(db, 'salas'), { nome, cap: cap || 'N/I', ar, proj });
+        mostrarMensagem(statusSala, 'Sala salva no catálogo!', true);
+        document.getElementById('cad-nome').value = '';
+        document.getElementById('cad-cap').value = '';
+      } catch (err) {
+        mostrarMensagem(statusSala, 'Erro ao salvar sala.', false);
+      } finally {
+        btnSaveSala.disabled = false;
+      }
+    };
+
+    function carregarCatalogoSalas() {
+      onValue(ref(db, 'salas'), (snapshot) => {
+        listaSalas.innerHTML = '';
+        selectNovaSala.innerHTML = '<option value="">Selecione uma sala do catálogo...</option>';
+        const data = snapshot.val();
+        if (!data) return;
+
+        Object.entries(data).forEach(([key, sala]) => {
+          const li = document.createElement('li');
+          li.className = 'item';
+          li.innerHTML = `<div><strong>${sala.nome}</strong> (Cap: ${sala.cap})<br><small style="color:#94a3b8;">Ar: ${sala.ar} | Projetor: ${sala.proj}</small></div>`;
+
+          const btnDel = document.createElement('button');
+          btnDel.className = 'btn-del';
+          btnDel.textContent = 'Excluir';
+          btnDel.onclick = () => remove(ref(db, 'salas/' + key));
+
+          li.appendChild(btnDel);
+          listaSalas.appendChild(li);
+
+          const opt = document.createElement('option');
+          opt.value = sala.nome;
+          opt.textContent = `${sala.nome} (Cap: ${sala.cap} | Ar: ${sala.ar})`;
+          selectNovaSala.appendChild(opt);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
