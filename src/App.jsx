@@ -69,7 +69,7 @@ function App() {
           ) : alertas.length === 0 ? (
             <p style={styles.semAlertas}>✅ Nenhuma alteração de sala registrada no momento.</p>
           ) : (
-            alertas.map((item) => (
+            alertas.map((item) => (s
               <div key={item.id} style={styles.wrapperNotificacao}>
                 <Notificacao dados={item} onFechar={() => removerAlerta(item.id)} />
               </div>
@@ -77,6 +77,14 @@ function App() {
           )}
         </div>
       </main>
+      <div style={{ marginTop: '24px', textAlign: 'center', borderTop: '1px solid #26323d', paddingTop: '14px' }}>
+  <a 
+    href="./admin.html" 
+    style={{ color: '#64748b', fontSize: '0.82rem', textDecoration: 'none' }}
+  >
+    Painel do Apoio
+  </a>
+</div>
     </div>
   );
 }
