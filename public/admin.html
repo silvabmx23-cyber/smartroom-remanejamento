@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
     body { background: #0f0b0e; color: #f8fafc; display: flex; justify-content: center; padding: 20px 14px; }
-    .box { background: #111827; border: 1px solid #26323d; border-radius: 18px; width: 100%; max-width: 580px; padding: 22px; }
+    .box { background: #111827; border: 1px solid #26323d; border-radius: 18px; width: 100%; max-width: 620px; padding: 22px; }
     .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #26323d; }
     .top h1 { font-size: 1.2rem; color: #34d399; }
     .top a { color: #94a3b8; text-decoration: none; font-size: .85rem; }
@@ -23,7 +23,7 @@
     .btn:hover { background: #047857; }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-sec { background: #1e293b; border-color: #475569; margin-top: 8px; }
-    .btn-del { background: #451a1a; color: #fca5a5; border: 1px solid #ef4444; padding: 4px 8px; border-radius: 6px; font-size: .75rem; cursor: pointer; }
+    .btn-del { background: #451a1a; color: #fca5a5; border: 1px solid #ef4444; padding: 5px 10px; border-radius: 6px; font-size: .75rem; font-weight: 600; cursor: pointer; }
     .msg { margin-top: 12px; padding: 10px; border-radius: 8px; text-align: center; font-size: .86rem; font-weight: 600; display: none; }
     .msg.ok { display: block; background: #064e3b; color: #6ee7b7; border: 1px solid #10b981; }
     .msg.err { display: block; background: #450a0a; color: #fca5a5; border: 1px solid #ef4444; }
@@ -32,8 +32,8 @@
     .secao h2 { font-size: 1.05rem; color: #34d399; margin-bottom: 4px; }
     .secao p { font-size: .8rem; color: #94a3b8; margin-bottom: 12px; }
     .lista { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-    .item { background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; font-size: .88rem; }
-    .item:hover { border-color: #34d399; }
+    .item { background: #0b1117; border: 1px solid #26323d; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .86rem; }
+    .badge { display: inline-block; background: rgba(52, 211, 153, 0.15); color: #34d399; padding: 2px 7px; border-radius: 6px; font-size: .72rem; font-weight: 700; margin-bottom: 3px; }
   </style>
 </head>
 <body>
@@ -66,23 +66,39 @@
 
       <div class="row">
         <div class="fg">
-          <label for="hora">Horário</label>
-          <input type="text" id="hora" placeholder="Ex: 19:00 - 21:40" />
+          <label for="campus">Campus / Unidade</label>
+          <select id="campus">
+            <option value="Carneiro da Cunha">Campus Carneiro da Cunha</option>
+            <option value="Bezerra de Menezes">Campus Bezerra de Menezes</option>
+            <option value="Conselheiro Estelita">Campus Conselheiro Estelita</option>
+            <option value="Maracanaú">Campus Maracanaú</option>
+          </select>
         </div>
         <div class="fg">
-          <label for="sigla">Sigla / Turma</label>
-          <input type="text" id="sigla" placeholder="Ex: ADS-4N" />
+          <label for="hora">Horário</label>
+          <input type="text" id="hora" placeholder="Ex: 19:00 - 21:40" />
         </div>
       </div>
 
       <div class="row">
         <div class="fg">
+          <label for="sigla">Sigla / Turma</label>
+          <input type="text" id="sigla" placeholder="Ex: ADS-4N" />
+        </div>
+        <div class="fg">
           <label for="disc">Disciplina</label>
           <input type="text" id="disc" placeholder="Ex: Engenharia de Software" />
         </div>
+      </div>
+
+      <div class="row">
         <div class="fg">
           <label for="prof">Professor(a)</label>
           <input type="text" id="prof" placeholder="Nome do docente" />
+        </div>
+        <div class="fg">
+          <label for="emailsDestino">E-mails p/ Notificar (Opcional)</label>
+          <input type="text" id="emailsDestino" placeholder="prof@unifametro.edu.br, turma@..." />
         </div>
       </div>
 
@@ -121,8 +137,14 @@
         </div>
       </div>
 
-      <button type="button" id="btnSave" class="btn">Publicar Alteração Agora</button>
+      <button type="button" id="btnSave" class="btn">Publicar Alteração e Notificar</button>
       <div id="statusMsg" class="msg"></div>
+
+      <div class="secao">
+        <h2>Remanejamentos Ativos no Momento</h2>
+        <p>Encerre ou exclua avisos antigos quando a aula terminar.</p>
+        <ul id="lista-remanejamentos" class="lista"></ul>
+      </div>
 
       <div class="secao">
         <h2>Catálogo de Salas Disponíveis</h2>
@@ -163,25 +185,35 @@
       </div>
     </div>
   </div>
-    <script type="module">
+  <script src="https://jsdelivr.net"></script>
+  <script type="module">
     const cdn = "https://www.gstatic." + "com/firebasejs/10.12.2/";
     const { initializeApp } = await import(cdn + "firebase-app.js");
-    const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } = await import(cdn + "firebase-auth.js");
+    const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import(cdn + "firebase-auth.js");
     const { getDatabase, ref, push, onValue, remove } = await import(cdn + "firebase-database.js");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBXGRZaJc4GM-zWjaImG1Ga0lV4J1Luz0c",
-  authDomain: "smartroom-remanejamento.firebaseapp.com",
-  databaseURL: "https://smartroom-remanejamento-default-rtdb.firebaseio.com",
-  projectId: "smartroom-remanejamento",
-  storageBucket: "smartroom-remanejamento.firebasestorage.app",
-  messagingSenderId: "465695973098",
-  appId: "1:465695973098:web:f60b648cba5761f542c193",
-  measurementId: "G-873M1VZ98X"
-};
     const EMAILJS_PUBLIC_KEY = "z_e7XUJmQyIudWtwB";
     const EMAILJS_SERVICE_ID = "service_6sa8w0i";
     const EMAILJS_TEMPLATE_ID = "template_lchcu8q";
+
+    if (window.emailjs) {
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXGRZsJc4GM-zwjmImG1GaOlV4J1Luz0c",
+      authDomain: "://firebaseapp.com",
+      databaseURL: "https://firebaseio.com",
+      projectId: "smartroom-remanejamento",
+      storageBucket: "smartroom-remanejamento.firebasestorage.app",
+      messagingSenderId: "465695973898",
+      appId: "1:465695973898:web:f60b648cbe5761f542c193",
+      measurementId: "G-873M1VZ98X"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
     const loginBox = document.getElementById('login-box');
     const formArea = document.getElementById('form-area');
@@ -194,6 +226,7 @@ const firebaseConfig = {
     const btnSaveSala = document.getElementById('btnSaveSala');
     const statusSala = document.getElementById('status-sala');
     const listaSalas = document.getElementById('lista-salas');
+    const listaRemanejamentos = document.getElementById('lista-remanejamentos');
     const selectNovaSala = document.getElementById('nova');
 
     function mostrarMensagem(el, texto, sucesso = true) {
@@ -207,6 +240,7 @@ const firebaseConfig = {
         formArea.classList.remove('hidden');
         userEmailSpan.textContent = user.email;
         carregarCatalogoSalas();
+        carregarRemanejamentosAtivos();
       } else {
         loginBox.classList.remove('hidden');
         formArea.classList.add('hidden');
@@ -229,14 +263,9 @@ const firebaseConfig = {
       loginErro.className = 'msg';
 
       try {
-        const cred = await signInWithEmailAndPassword(auth, email, senha);
-        if (!cred.user.emailVerified) {
-          await sendEmailVerification(cred.user);
-          alert('Link de verificação enviado para ' + cred.user.email + '. Confirme na sua caixa de entrada.');
-        }
-            } catch (err) {
-        mostrarMensagem(loginErro, 'Código do Firebase: ' + err.code, false);
-
+        await signInWithEmailAndPassword(auth, email, senha);
+      } catch (err) {
+        mostrarMensagem(loginErro, 'Erro ao entrar: ' + err.code, false);
       } finally {
         btnLogin.disabled = false;
         btnLogin.textContent = 'Entrar no Painel';
@@ -246,7 +275,9 @@ const firebaseConfig = {
     btnLogout.onclick = () => signOut(auth);
 
     btnSave.onclick = async () => {
+      const emailsTexto = document.getElementById('emailsDestino').value.trim();
       const dados = {
+        campus: document.getElementById('campus').value,
         hora: document.getElementById('hora').value.trim(),
         sigla: document.getElementById('sigla').value.trim(),
         disc: document.getElementById('disc').value.trim(),
@@ -256,6 +287,7 @@ const firebaseConfig = {
         motivo: document.getElementById('motivo').value,
         mTit: document.getElementById('mTit').value.trim(),
         mPassos: document.getElementById('mPassos').value.trim(),
+        confirmados: 0,
         criadoEm: Date.now()
       };
 
@@ -269,16 +301,68 @@ const firebaseConfig = {
 
       try {
         await push(ref(db, 'remanejamentos'), dados);
-        mostrarMensagem(statusMsg, 'Alteração publicada com sucesso!', true);
-        ['hora', 'sigla', 'disc', 'prof', 'ant', 'mTit', 'mPassos'].forEach(id => document.getElementById(id).value = '');
+
+        let avisoExtra = '';
+        if (emailsTexto && window.emailjs) {
+          const listaEmails = emailsTexto.split(',').map(e => e.trim()).filter(Boolean);
+          for (const dest of listaEmails) {
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+              to_email: dest,
+              campus: dados.campus,
+              disciplina: dados.disc,
+              professor: dados.prof || 'Não informado',
+              horario: dados.hora || 'Agora',
+              sala_anterior: dados.ant,
+              nova_sala: dados.nova,
+              motivo: dados.motivo
+            });
+          }
+          avisoExtra = ` e e-mail enviado para ${listaEmails.length} destinatário(s)!`;
+        }
+
+        mostrarMensagem(statusMsg, 'Alteração publicada com sucesso' + avisoExtra, true);
+        ['hora', 'sigla', 'disc', 'prof', 'emailsDestino', 'ant', 'mTit', 'mPassos'].forEach(id => {
+          document.getElementById(id).value = '';
+        });
         document.getElementById('nova').value = '';
       } catch (err) {
-        mostrarMensagem(statusMsg, 'Erro ao salvar no banco de dados.', false);
+        mostrarMensagem(statusMsg, 'Erro ao publicar: ' + (err.text || err.message), false);
       } finally {
         btnSave.disabled = false;
-        btnSave.textContent = 'Publicar Alteração Agora';
+        btnSave.textContent = 'Publicar Alteração e Notificar';
       }
     };
+
+    function carregarRemanejamentosAtivos() {
+      onValue(ref(db, 'remanejamentos'), (snapshot) => {
+        listaRemanejamentos.innerHTML = '';
+        const data = snapshot.val();
+        if (!data) {
+          listaRemanejamentos.innerHTML = '<li class="item" style="color:#64748b;">Nenhum remanejamento ativo no momento.</li>';
+          return;
+        }
+
+        Object.entries(data).reverse().forEach(([key, item]) => {
+          const li = document.createElement('li');
+          li.className = 'item';
+          li.innerHTML = `
+            <div>
+              <span class="badge">${item.campus || 'Geral'}</span>
+              <div><strong>${item.disc}</strong> (${item.sigla || 'Turma'})</div>
+              <small style="color:#94a3b8;">${item.ant} ➔ <strong style="color:#34d399;">${item.nova}</strong> • ${item.confirmados || 0} ciente(s)</small>
+            </div>
+          `;
+
+          const btnDel = document.createElement('button');
+          btnDel.className = 'btn-del';
+          btnDel.textContent = 'Encerrar';
+          btnDel.onclick = () => remove(ref(db, 'remanejamentos/' + key));
+
+          li.appendChild(btnDel);
+          listaRemanejamentos.appendChild(li);
+        });
+      });
+    }
 
     btnSaveSala.onclick = async () => {
       const nome = document.getElementById('cad-nome').value.trim();
