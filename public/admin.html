@@ -164,14 +164,15 @@
     </div>
   </div>
     <script type="module">
-    import { initializeApp } from "https://gstatic.com";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://gstatic.com";
-    import { getDatabase, ref, push, onValue, remove } from "https://gstatic.com";
+    const cdn = "https://www.gstatic." + "com/firebasejs/10.12.2/";
+    const { initializeApp } = await import(cdn + "firebase-app.js");
+    const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } = await import(cdn + "firebase-auth.js");
+    const { getDatabase, ref, push, onValue, remove } = await import(cdn + "firebase-database.js");
 
     const firebaseConfig = {
       apiKey: "AIzaSyBXGRZsJc4GM-zwjmImG1Ge0lV4J1Luz0c",
-      authDomain: "://firebaseapp.com",
-      databaseURL: "https://firebaseio.com",
+      authDomain: "smartroom-remanejamento" + ".firebaseapp.com",
+      databaseURL: "https://" + "smartroom-remanejamento-default-rtdb" + ".firebaseio.com",
       projectId: "smartroom-remanejamento",
       storageBucket: "smartroom-remanejamento.firebasestorage.app",
       messagingSenderId: "465695973898",
