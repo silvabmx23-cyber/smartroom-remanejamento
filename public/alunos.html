@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartRoom — Alteração de Sala</title>
-  <link href="https://googleapis.com" rel="stylesheet">
   <style>
     :root {
       --e4: #34d399; --e5: #10b981; --e6: #059669;
@@ -12,10 +11,10 @@
       --card: rgba(17, 25, 33, 0.72); --surf: rgba(255, 255, 255, 0.03);
       --bdr: rgba(255, 255, 255, 0.08); --txt: #f8fafc; --sec: #94a3b8;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body {
       background: var(--bg) radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.16), transparent 55%);
-      color: var(--txt); display: flex; justify-content: center; align-items: center;
+      color: var(--txt); display: flex; flex-direction: column; justify-content: center; align-items: center;
       min-height: 100vh; padding: 20px;
     }
     .card {
@@ -29,17 +28,19 @@
       font-weight: 800; font-size: 1.05rem; letter-spacing: 0.08em; text-transform: uppercase;
     }
     .card-body { padding: 28px 32px 36px; }
-    .top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
     .brand-tag { font-size: 0.8rem; font-weight: 700; color: var(--e4); text-transform: uppercase; }
     .badge-time {
       display: inline-flex; align-items: center; gap: 8px; background: var(--surf);
       color: var(--sec); border: 1px solid var(--bdr); padding: 6px 14px;
       border-radius: 999px; font-size: 0.8rem;
     }
-    .pulse-dot { width: 8px; height: 8px; background: var(--e4); border-radius: 50%; }
+    .pulse-dot { width: 8px; height: 8px; background: var(--e4); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     .info-group { text-align: center; margin-bottom: 30px; }
     .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec); font-weight: 700; margin-bottom: 6px; }
-    .disciplina { font-size: 1.55rem; font-weight: 800; color: #fff; margin-bottom: 18px; }
+    .disciplina { font-size: 1.55rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .sigla-badge { display: inline-block; background: rgba(52, 211, 153, 0.12); color: var(--e4); border: 1px solid rgba(52, 211, 153, 0.3); padding: 3px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 700; margin-bottom: 16px; }
     .professor { font-size: 1.05rem; color: #cbd5e1; }
     .transfer-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-bottom: 26px; }
     .room-box { padding: 22px 18px; border-radius: 16px; text-align: center; }
@@ -59,10 +60,16 @@
     .reason-title { font-weight: 700; color: #fbbf24; font-size: 0.88rem; text-transform: uppercase; margin-bottom: 6px; }
     .reason-text { color: #fef3c7; font-size: 0.95rem; line-height: 1.55; }
     .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn { padding: 13px 22px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
+    .btn { padding: 13px 22px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
     .btn-primary { background: var(--e6); color: #fff; border: 1px solid var(--e4); }
-    .btn-primary.confirmed { background: #065f46; color: #a7f3d0; }
+    .btn-primary:hover { background: var(--e5); }
+    .btn-primary.confirmed { background: #065f46; color: #a7f3d0; cursor: default; }
     .btn-secondary { background: var(--surf); color: #e2e8f0; border: 1px solid var(--bdr); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.08); }
+    .confirm-count { text-align: center; margin-top: 14px; font-size: 0.8rem; color: var(--sec); }
+    .footer-link { margin-top: 20px; text-align: center; }
+    .footer-link a { color: #64748b; font-size: 0.82rem; text-decoration: none; }
+    .footer-link a:hover { color: var(--e4); }
     .modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.78);
       justify-content: center; align-items: center; padding: 20px; z-index: 100;
@@ -89,16 +96,17 @@
     <div class="card-header">⚠️ Alteração de Sala Imediata</div>
     <div class="card-body">
       <div class="top-meta">
-        <span class="brand-tag">SmartRoom</span>
+        <span class="brand-tag">SmartRoom • Tempo Real</span>
         <div class="badge-time">
           <span class="pulse-dot"></span>
-          <span id="hora">Carregando...</span>
+          <span id="hora">Sincronizando...</span>
         </div>
       </div>
 
       <div class="info-group">
         <div class="label">Disciplina</div>
-        <div class="disciplina" id="viewDisc">Carregando disciplina...</div>
+        <div class="disciplina" id="viewDisc">Aguardando atualização...</div>
+        <div id="viewSigla" class="sigla-badge" style="display: none;">--</div>
         <div class="label">Docente</div>
         <div class="professor" id="viewProf">--</div>
       </div>
@@ -121,65 +129,119 @@
       </div>
 
       <div class="actions">
-        <button type="button" class="btn btn-primary" id="btnConfirmar" onclick="confirmarPresenca()">✓ Ciente da Alteração</button>
-        <button type="button" class="btn btn-secondary" onclick="abrirMapa()">🗺️ Como Chegar</button>
+        <button type="button" class="btn btn-primary" id="btnConfirmar">✓ Ciente da Alteração</button>
+        <button type="button" class="btn btn-secondary" id="btnMapa">🗺️ Como Chegar</button>
       </div>
+      <div class="confirm-count" id="viewConfirmados">0 alunos confirmaram ciência</div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="modalMapa" onclick="fecharMapa(event)">
+  <div class="footer-link">
+    <a href="./admin.html">Painel do Apoio</a>
+  </div>
+
+  <div class="modal-overlay" id="modalMapa">
     <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-title" id="modalTitulo">📍 Localização</div>
-      <div class="map-placeholder" id="modalPassos"></div>
-      <button type="button" class="btn btn-primary" style="width: 100%;" onclick="fecharMapa()">Entendido</button>
+      <div class="modal-title" id="modalTitulo">📍 Localização da Nova Sala</div>
+      <div class="map-placeholder" id="modalPassos">Nenhuma instrução adicional informada pelo apoio.</div>
+      <button type="button" class="btn btn-primary" style="width: 100%;" id="btnFecharMapa">Entendido</button>
     </div>
   </div>
+  <script type="module">
+    const cdn = "https://www.gstatic." + "com/firebasejs/10.12.2/";
+    const { initializeApp } = await import(cdn + "firebase-app.js");
+    const { getDatabase, ref, onValue, runTransaction } = await import(cdn + "firebase-database.js");
 
-  <script>
-    function confirmarPresenca() {
-      const btn = document.getElementById('btnConfirmar');
-      btn.classList.add('confirmed');
-      btn.innerText = '✓ Presença Confirmada';
-    }
+    const firebaseConfig = {
+      apiKey: "AIzaSyBXGRZsJc4GM-zwjmImG1Ge0lV4J1Luz0c",
+      authDomain: "smartroom-remanejamento" + ".firebaseapp.com",
+      databaseURL: "https://" + "smartroom-remanejamento-default-rtdb" + ".firebaseio.com",
+      projectId: "smartroom-remanejamento",
+      storageBucket: "smartroom-remanejamento.firebasestorage.app",
+      messagingSenderId: "465695973898",
+      appId: "1:465695973898:web:f60b648cbe5761f542c193",
+      measurementId: "G-873M1VZ98X"
+    };
 
-    function abrirMapa() {
-      document.getElementById('modalMapa').style.display = 'flex';
-    }
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-    function fecharMapa(e) {
-      if (!e || e.target.id === 'modalMapa') {
-        document.getElementById('modalMapa').style.display = 'none';
+    let registroAtualId = null;
+
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const modalMapa = document.getElementById('modalMapa');
+
+    document.getElementById('btnMapa').onclick = () => { modalMapa.style.display = 'flex'; };
+    document.getElementById('btnFecharMapa').onclick = () => { modalMapa.style.display = 'none'; };
+    modalMapa.onclick = (e) => { if (e.target === modalMapa) modalMapa.style.display = 'none'; };
+
+    // Escuta em tempo real o último remanejamento publicado pelo Painel de Apoio
+    onValue(ref(db, 'remanejamentos'), (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        document.getElementById('hora').innerText = 'Nenhuma alteração ativa';
+        document.getElementById('viewDisc').innerText = 'Nenhuma sala alterada no momento';
+        return;
       }
-    }
 
-    async function carregarDados() {
+      const entradas = Object.entries(data);
+      const [ultimoId, item] = entradas[entradas.length - 1];
+      registroAtualId = ultimoId;
+
+      const horarioTexto = item.hora
+        ? `Horário: ${item.hora}`
+        : `Atualizado às ${new Date(item.criadoEm || Date.now()).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+
+      document.getElementById('hora').innerText = horarioTexto;
+      document.getElementById('viewDisc').innerText = item.disc || 'Disciplina não informada';
+
+      const siglaEl = document.getElementById('viewSigla');
+      if (item.sigla) {
+        siglaEl.style.display = 'inline-block';
+        siglaEl.innerText = item.sigla;
+      } else {
+        siglaEl.style.display = 'none';
+      }
+
+      document.getElementById('viewProf').innerText = item.prof || '--';
+      document.getElementById('viewAnt').innerText = item.ant || '--';
+      document.getElementById('viewNova').innerText = item.nova || '--';
+      document.getElementById('viewMotivo').innerText = item.motivo || '--';
+
+      document.getElementById('modalTitulo').innerText = item.mTit || `📍 Como chegar: ${item.nova || 'Nova Sala'}`;
+      document.getElementById('modalPassos').innerText = item.mPassos || 'Dirija-se diretamente à nova sala indicada acima.';
+
+      const qtd = item.confirmados || 0;
+      document.getElementById('viewConfirmados').innerText = `${qtd} ${qtd === 1 ? 'aluno confirmou' : 'alunos confirmaram'} ciência`;
+
+      // Verifica se este navegador já confirmou ciência deste aviso específico
+      if (localStorage.getItem('sr_conf_' + ultimoId)) {
+        btnConfirmar.classList.add('confirmed');
+        btnConfirmar.innerText = '✓ Presença Confirmada';
+        btnConfirmar.disabled = true;
+      } else {
+        btnConfirmar.classList.remove('confirmed');
+        btnConfirmar.innerText = '✓ Ciente da Alteração';
+        btnConfirmar.disabled = false;
+      }
+    });
+
+    // Registra a confirmação do aluno no Firebase
+    btnConfirmar.onclick = async () => {
+      if (!registroAtualId || localStorage.getItem('sr_conf_' + registroAtualId)) return;
+
+      btnConfirmar.disabled = true;
+      btnConfirmar.innerText = 'Confirmando...';
+
       try {
-        let r = await fetch('./public/dados.json?t=' + Date.now());
-        if (!r.ok) {
-          r = await fetch('./dados.json?t=' + Date.now());
-        }
-        const j = await r.json();
-
-        document.getElementById('hora').innerText = 'Atualizado às ' + (j.atualizado_em || '--:--');
-        document.getElementById('viewDisc').innerText = j.disciplina || 'Sem disciplina informada';
-        document.getElementById('viewProf').innerText = j.professor || '--';
-        document.getElementById('viewAnt').innerText = j.sala_anterior || '--';
-        document.getElementById('viewNova').innerText = j.nova_sala || '--';
-        document.getElementById('viewMotivo').innerText = j.motivo || '--';
-
-        if (j.mapa) {
-          document.getElementById('modalTitulo').innerText = '📍 ' + (j.mapa.titulo || 'Como Chegar');
-          const passos = j.mapa.passos || [];
-          document.getElementById('modalPassos').innerText = passos.length ? passos.join('\n\n') : 'Instruções não cadastradas.';
-        }
-      } catch (e) {
-        console.error('Erro ao carregar dados.json', e);
+        await runTransaction(ref(db, `remanejamentos/${registroAtualId}/confirmados`), (atual) => (atual || 0) + 1);
+        localStorage.setItem('sr_conf_' + registroAtualId, '1');
+        btnConfirmar.classList.add('confirmed');
+        btnConfirmar.innerText = '✓ Presença Confirmada';
+      } catch (err) {
+        btnConfirmar.disabled = false;
+        btnConfirmar.innerText = '✓ Ciente da Alteração';
       }
-    }
-
-    window.onload = function() {
-      carregarDados();
-      setInterval(carregarDados, 30000);
     };
   </script>
 </body>
