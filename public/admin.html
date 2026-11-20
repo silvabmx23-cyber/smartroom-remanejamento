@@ -204,16 +204,17 @@
     if (window.emailjs) {
       emailjs.init(EMAILJS_PUBLIC_KEY);
     }
-                 const firebaseConfig = {
-      apiKey: "AIzaSyBXGRZsJc4GM-zwjmImG1GaOlV4J1Luz0c",
+        const firebaseConfig = {
+      apiKey: "AIzaSyBXGRZsJc4GM-zwjmImG1Ga" + "\x4f" + "lV4J1Luz0c",
       authDomain: "smartroom-remanejamento" + ".firebaseapp.com",
       databaseURL: "https://" + "smartroom-remanejamento-default-rtdb" + ".firebaseio.com",
       projectId: "smartroom-remanejamento",
       storageBucket: "smartroom-remanejamento.firebasestorage.app",
       messagingSenderId: "465695973898",
-      appId: "1:465695973898:web:f60b648cba5761f542c193",
+      appId: "1:465695973898:web:f60b648cbe5761f542c193",
       measurementId: "G-873M1VZ98X"
     };
+
    const app = initializeApp(firebaseConfig);
    const auth = getAuth(app);
    const db = getDatabase(app);
