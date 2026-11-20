@@ -67,9 +67,6 @@
     .btn-secondary { background: var(--surf); color: #e2e8f0; border: 1px solid var(--bdr); }
     .btn-secondary:hover { background: rgba(255,255,255,0.08); }
     .confirm-count { text-align: center; margin-top: 14px; font-size: 0.8rem; color: var(--sec); }
-    .footer-link { margin-top: 20px; text-align: center; }
-    .footer-link a { color: #64748b; font-size: 0.82rem; text-decoration: none; }
-    .footer-link a:hover { color: var(--e4); }
     .modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.78);
       justify-content: center; align-items: center; padding: 20px; z-index: 100;
@@ -131,13 +128,12 @@
       <div class="actions">
         <button type="button" class="btn btn-primary" id="btnConfirmar">✓ Ciente da Alteração</button>
         <button type="button" class="btn btn-secondary" id="btnMapa">🗺️ Como Chegar</button>
+        <a href="./admin.html" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+          ← Voltar para Painel do Apoio
+        </a>
       </div>
       <div class="confirm-count" id="viewConfirmados">0 alunos confirmaram ciência</div>
     </div>
-  </div>
-
-  <div class="footer-link">
-    <a href="./admin.html">Painel do Apoio</a>
   </div>
 
   <div class="modal-overlay" id="modalMapa">
@@ -175,7 +171,6 @@
     document.getElementById('btnFecharMapa').onclick = () => { modalMapa.style.display = 'none'; };
     modalMapa.onclick = (e) => { if (e.target === modalMapa) modalMapa.style.display = 'none'; };
 
-    // Escuta em tempo real o último remanejamento publicado pelo Painel de Apoio
     onValue(ref(db, 'remanejamentos'), (snapshot) => {
       const data = snapshot.val();
       if (!data) {
@@ -214,7 +209,6 @@
       const qtd = item.confirmados || 0;
       document.getElementById('viewConfirmados').innerText = `${qtd} ${qtd === 1 ? 'aluno confirmou' : 'alunos confirmaram'} ciência`;
 
-      // Verifica se este navegador já confirmou ciência deste aviso específico
       if (localStorage.getItem('sr_conf_' + ultimoId)) {
         btnConfirmar.classList.add('confirmed');
         btnConfirmar.innerText = '✓ Presença Confirmada';
@@ -226,7 +220,6 @@
       }
     });
 
-    // Registra a confirmação do aluno no Firebase
     btnConfirmar.onclick = async () => {
       if (!registroAtualId || localStorage.getItem('sr_conf_' + registroAtualId)) return;
 
