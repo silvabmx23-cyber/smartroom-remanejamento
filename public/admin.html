@@ -185,7 +185,12 @@
       </div>
     </div>
   </div>
-  <script src="https://jsdelivr.net"></script>
+    <script>
+    const s = document.createElement('script');
+    s.src = "https://cdn.jsdelivr." + "net/npm/@emailjs/browser@4/dist/email.min.js";
+    document.head.appendChild(s);
+  </script>
+
   <script type="module">
     const cdn = "https://www.gstatic." + "com/firebasejs/10.12.2/";
     const { initializeApp } = await import(cdn + "firebase-app.js");
@@ -200,16 +205,17 @@
       emailjs.init(EMAILJS_PUBLIC_KEY);
     }
 
-    const firebaseConfig = {
+         const firebaseConfig = {
       apiKey: "AIzaSyBXGRZsJc4GM-zwjmImG1GaOlV4J1Luz0c",
-      authDomain: "://firebaseapp.com",
-      databaseURL: "https://firebaseio.com",
+      authDomain: "smartroom-remanejamento" + ".firebaseapp.com",
+      databaseURL: "https://" + "smartroom-remanejamento-default-rtdb" + ".firebaseio.com",
       projectId: "smartroom-remanejamento",
       storageBucket: "smartroom-remanejamento.firebasestorage.app",
       messagingSenderId: "465695973898",
       appId: "1:465695973898:web:f60b648cbe5761f542c193",
       measurementId: "G-873M1VZ98X"
     };
+
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
