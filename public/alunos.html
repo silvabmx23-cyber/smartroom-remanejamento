@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartRoom — Alteração de Sala</title>
+  <link href="https://googleapis.com" rel="stylesheet">
+  <style>
+    :root {
+      --e4: #34d399; --e5: #10b981; --e6: #059669;
+      --glow: rgba(16, 185, 129, 0.25); --bg: #070b0e;
+      --card: rgba(17, 25, 33, 0.72); --surf: rgba(255, 255, 255, 0.03);
+      --bdr: rgba(255, 255, 255, 0.08); --txt: #f8fafc; --sec: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      background: var(--bg) radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.16), transparent 55%);
+      color: var(--txt); display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; padding: 20px;
+    }
+    .card {
+      background: var(--card); backdrop-filter: blur(20px); width: 100%; max-width: 720px;
+      border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.65);
+      overflow: hidden; border: 1px solid var(--bdr);
+    }
+    .card-header {
+      background: linear-gradient(90deg, rgba(5,150,105,0.9), rgba(4,120,87,0.9));
+      color: #fff; padding: 18px 28px; text-align: center;
+      font-weight: 800; font-size: 1.05rem; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .card-body { padding: 28px 32px 36px; }
+    .top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .brand-tag { font-size: 0.8rem; font-weight: 700; color: var(--e4); text-transform: uppercase; }
+    .badge-time {
+      display: inline-flex; align-items: center; gap: 8px; background: var(--surf);
+      color: var(--sec); border: 1px solid var(--bdr); padding: 6px 14px;
+      border-radius: 999px; font-size: 0.8rem;
+    }
+    .pulse-dot { width: 8px; height: 8px; background: var(--e4); border-radius: 50%; }
+    .info-group { text-align: center; margin-bottom: 30px; }
+    .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--sec); font-weight: 700; margin-bottom: 6px; }
+    .disciplina { font-size: 1.55rem; font-weight: 800; color: #fff; margin-bottom: 18px; }
+    .professor { font-size: 1.05rem; color: #cbd5e1; }
+    .transfer-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin-bottom: 26px; }
+    .room-box { padding: 22px 18px; border-radius: 16px; text-align: center; }
+    .room-old { background: var(--surf); border: 1px solid var(--bdr); color: var(--sec); }
+    .room-old .room-name { text-decoration: line-through; opacity: 0.75; font-size: 1.1rem; font-weight: 600; margin-top: 8px; }
+    .room-new { background: rgba(16,185,129,0.14); border: 1.5px solid var(--e5); color: #fff; box-shadow: 0 0 30px var(--glow); }
+    .room-new .label { color: var(--e4); }
+    .room-new .room-name { font-size: 1.32rem; font-weight: 800; margin-top: 8px; }
+    .arrow-circle {
+      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa;
+      width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .reason-box {
+      background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.25);
+      border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 14px; text-align: center; margin-bottom: 30px;
+    }
+    .reason-title { font-weight: 700; color: #fbbf24; font-size: 0.88rem; text-transform: uppercase; margin-bottom: 6px; }
+    .reason-text { color: #fef3c7; font-size: 0.95rem; line-height: 1.55; }
+    .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { padding: 13px 22px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; }
+    .btn-primary { background: var(--e6); color: #fff; border: 1px solid var(--e4); }
+    .btn-primary.confirmed { background: #065f46; color: #a7f3d0; }
+    .btn-secondary { background: var(--surf); color: #e2e8f0; border: 1px solid var(--bdr); }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.78);
+      justify-content: center; align-items: center; padding: 20px; z-index: 100;
+    }
+    .modal-content {
+      background: #111921; border: 1px solid var(--bdr); border-radius: 20px;
+      max-width: 460px; width: 100%; padding: 28px; text-align: center;
+    }
+    .modal-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--e4); }
+    .map-placeholder {
+      background: var(--surf); border: 1px dashed rgba(255,255,255,0.15); border-radius: 14px;
+      padding: 22px; margin: 18px 0; color: #cbd5e1; font-size: 0.94rem; line-height: 1.65;
+      text-align: left; white-space: pre-line;
+    }
+    @media (max-width: 640px) {
+      .transfer-grid { grid-template-columns: 1fr; }
+      .arrow-circle { margin: 0 auto; transform: rotate(90deg); }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">⚠️ Alteração de Sala Imediata</div>
+    <div class="card-body">
+      <div class="top-meta">
+        <span class="brand-tag">SmartRoom</span>
+        <div class="badge-time">
+          <span class="pulse-dot"></span>
+          <span id="hora">Carregando...</span>
+        </div>
+      </div>
+
+      <div class="info-group">
+        <div class="label">Disciplina</div>
+        <div class="disciplina" id="viewDisc">Carregando disciplina...</div>
+        <div class="label">Docente</div>
+        <div class="professor" id="viewProf">--</div>
+      </div>
+
+      <div class="transfer-grid">
+        <div class="room-box room-old">
+          <div class="label">Sala Anterior</div>
+          <div class="room-name" id="viewAnt">--</div>
+        </div>
+        <div class="arrow-circle">➔</div>
+        <div class="room-box room-new">
+          <div class="label">Nova Sala Confirmada</div>
+          <div class="room-name" id="viewNova">--</div>
+        </div>
+      </div>
+
+      <div class="reason-box">
+        <div class="reason-title">Motivo da Alteração</div>
+        <div class="reason-text" id="viewMotivo">--</div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="btnConfirmar" onclick="confirmarPresenca()">✓ Ciente da Alteração</button>
+        <button type="button" class="btn btn-secondary" onclick="abrirMapa()">🗺️ Como Chegar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalMapa" onclick="fecharMapa(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-title" id="modalTitulo">📍 Localização</div>
+      <div class="map-placeholder" id="modalPassos"></div>
+      <button type="button" class="btn btn-primary" style="width: 100%;" onclick="fecharMapa()">Entendido</button>
+    </div>
+  </div>
+
+  <script>
+    function confirmarPresenca() {
+      const btn = document.getElementById('btnConfirmar');
+      btn.classList.add('confirmed');
+      btn.innerText = '✓ Presença Confirmada';
+    }
+
+    function abrirMapa() {
+      document.getElementById('modalMapa').style.display = 'flex';
+    }
+
+    function fecharMapa(e) {
+      if (!e || e.target.id === 'modalMapa') {
+        document.getElementById('modalMapa').style.display = 'none';
+      }
+    }
+
+    async function carregarDados() {
+      try {
+        let r = await fetch('./public/dados.json?t=' + Date.now());
+        if (!r.ok) {
+          r = await fetch('./dados.json?t=' + Date.now());
+        }
+        const j = await r.json();
+
+        document.getElementById('hora').innerText = 'Atualizado às ' + (j.atualizado_em || '--:--');
+        document.getElementById('viewDisc').innerText = j.disciplina || 'Sem disciplina informada';
+        document.getElementById('viewProf').innerText = j.professor || '--';
+        document.getElementById('viewAnt').innerText = j.sala_anterior || '--';
+        document.getElementById('viewNova').innerText = j.nova_sala || '--';
+        document.getElementById('viewMotivo').innerText = j.motivo || '--';
+
+        if (j.mapa) {
+          document.getElementById('modalTitulo').innerText = '📍 ' + (j.mapa.titulo || 'Como Chegar');
+          const passos = j.mapa.passos || [];
+          document.getElementById('modalPassos').innerText = passos.length ? passos.join('\n\n') : 'Instruções não cadastradas.';
+        }
+      } catch (e) {
+        console.error('Erro ao carregar dados.json', e);
+      }
+    }
+
+    window.onload = function() {
+      carregarDados();
+      setInterval(carregarDados, 30000);
+    };
+  </script>
+</body>
+</html>
