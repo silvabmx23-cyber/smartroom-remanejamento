@@ -225,18 +225,39 @@
     };
 
     function dispararNotificacaoNovaSala(item) {
-      tocarSomAlerta();
+  tocarSomAlerta();
 
-      toastAlert.textContent = `⚠️ Nova alteração: ${item.disc} (${item.sigla || 'Turma'}) ➔ ${item.nova}`;
-      toastAlert.style.display = 'block';
-      setTimeout(() => { toastAlert.style.display = 'none'; }, 9000);
+  // Faz o celular vibrar (dois pulsos fortes)
+  if ("vibrate" in navigator) {
+    navigator.vibrate([300, 150, 300]);
+  }
 
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(`⚠️ Alteração de Sala: ${item.disc}`, {
-          body: `De ${item.ant} para ${item.nova} (${item.campus || 'Campus'}). Motivo: ${item.motivo}`
-        });
-      }
-    }
+  // Traz a janela para frente e rola para o topo do aviso
+  window.focus();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  toastAlert.textContent = `⚠️ Nova alteração: ${item.disc} (${item.sigla || 'Turma'}) ➔ ${item.nova}`;
+  toastAlert.style.display = 'block';
+  setTimeout(() => { toastAlert.style.display = 'none'; }, 12000);
+
+  if ("Notification" in window && Notification.permission === "granted") {
+    const notif = new Notification(`⚠️ Alteração de Sala: ${item.disc}`, {
+      body: `De ${item.ant} para ${item.nova} (${item.campus || 'Campus'}). Motivo: ${item.motivo}\nToque aqui para abrir o painel!`,
+      icon: "./icons.svg",
+      vibrate:,
+      requireInteraction: true
+    });
+
+    // Abre o link automaticamente ao tocar na notificação
+    notif.onclick = (event) => {
+      event.preventDefault();
+      window.focus();
+      window.open("https://github.io", "_self");
+      notif.close();
+    };
+  }
+}
+
 
     document.getElementById('btnFecharMapa').onclick = () => { modalMapa.style.display = 'none'; };
     modalMapa.onclick = (e) => { if (e.target === modalMapa) modalMapa.style.display = 'none'; };
