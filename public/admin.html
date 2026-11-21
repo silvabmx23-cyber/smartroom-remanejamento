@@ -307,8 +307,8 @@
         await push(ref(db, 'remanejamentos'), dados);
 
         let avisoExtra = '';
-        if (emailsTexto && window.emailjs) {
-          const listaEmails = emailsTexto.split(',').map(e => e.trim()).filter(Boolean);
+                if (emailsTexto && window.emailjs) {
+          const listaEmails = emailsTexto.split(/[\s,;]+/).map(e => e.trim()).filter(Boolean);
           for (const dest of listaEmails) {
             await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
               to_email: dest,
@@ -318,23 +318,26 @@
               horario: dados.hora || 'Agora',
               sala_anterior: dados.ant,
               nova_sala: dados.nova,
-              motivo: dados.motivo
+              motivo: dados.motivo,
+              link_painel: "https://github.io"
             });
           }
           avisoExtra = ` e e-mail enviado para ${listaEmails.length} destinatário(s)!`;
         }
 
         mostrarMensagem(statusMsg, 'Alteração publicada com sucesso' + avisoExtra, true);
-        ['hora', 'sigla', 'disc', 'prof', 'emailsDestino', 'ant', 'mTit', 'mPassos'].forEach(id => {
-          document.getElementById(id).value = '';
+        ['hora', 'sigla', 'disc', 'prof', 'emailsDestino', 'ant', 'eTit', 'ePassos', 'nova'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
         });
-        document.getElementById('nova').value = '';
       } catch (err) {
-        mostrarMensagem(statusMsg, 'Erro ao publicar: ' + (err.text || err.message), false);
+        console.error(err);
+        mostrarMensagem(statusMsg, 'Erro ao publicar: ' + (err.text || err.message || String(err)), false);
       } finally {
         btnSave.disabled = false;
         btnSave.textContent = 'Publicar Alteração e Notificar';
       }
+
     };
 
     function carregarRemanejamentosAtivos() {
