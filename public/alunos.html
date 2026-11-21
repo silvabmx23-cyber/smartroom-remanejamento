@@ -244,7 +244,7 @@
     const notif = new Notification(`⚠️ Alteração de Sala: ${item.disc}`, {
       body: `De ${item.ant} para ${item.nova} (${item.campus || 'Campus'}). Motivo: ${item.motivo}\nToque aqui para abrir o painel!`,
       icon: "./icons.svg",
-      vibrate:,
+      vibrate,
       requireInteraction: true
     });
 
