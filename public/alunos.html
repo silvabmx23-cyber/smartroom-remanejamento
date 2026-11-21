@@ -251,7 +251,7 @@
       body: `De ${item.ant} para ${item.nova} (${item.campus || 'Campus'}). Motivo: ${item.motivo}\nToque aqui para abrir o painel!`,
       icon: "./icons.svg",
       badge: "./icons.svg",
-      vibrate:,
+      vibrate: [300, 150, 300],
       requireInteraction: true,
       tag: "remanejamento-sala"
     };
@@ -263,9 +263,6 @@
     } else {
       new Notification(titulo, opcoes);
     }
-  }
-}
-
 
     document.getElementById('btnFecharMapa').onclick = () => { modalMapa.style.display = 'none'; };
     modalMapa.onclick = (e) => { if (e.target === modalMapa) modalMapa.style.display = 'none'; };
