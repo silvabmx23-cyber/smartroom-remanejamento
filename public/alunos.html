@@ -179,7 +179,7 @@
       navigator.serviceWorker.register('./sw.js').catch((err) => console.log('Erro SW:', err));
     }
 
-    const cdn = "https://www//gstatic.com" + "/firebasejs/13.4.0/";
+    const cdn = "https://www//gstatic.com" + "/firebasejs/10.12.2/";
 
     const { initializeApp } = await import(cdn + "firebase-app.js");
     const { getDatabase, ref, onValue, runTransaction } = await import(cdn + "firebase-database.js");
