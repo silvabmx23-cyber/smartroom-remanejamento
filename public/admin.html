@@ -192,7 +192,7 @@
   </script>
 
   <script type="module">
-    const cdn = "https://www.gstatic." + "com/firebasejs/13.4.0/";
+    const cdn = "https://gstatic.com"; + "com/firebasejs/13.4.0/";
     const { initializeApp } = await import(cdn + "firebase-app.js");
     const { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import(cdn + "firebase-auth.js");
     const { getDatabase, ref, push, onValue, remove } = await import(cdn + "firebase-database.js");
